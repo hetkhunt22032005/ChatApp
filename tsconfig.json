@@ -5,9 +5,12 @@
     "rootDir": "./src" ,
     "outDir": "./dist" ,
     "esModuleInterop": true ,
+    "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true ,
     "strict": true ,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "exclude": ["frontend"]
 }
