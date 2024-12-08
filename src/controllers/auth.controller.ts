@@ -1,9 +1,9 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import {
   LoginSchema,
   SignUpSchemaL1,
   SignUpSchemaL2,
-} from "../config/data.schema.ts";
+} from "../config/data.schema"; // .js
 import { ZodError } from "zod";
 import {
   comparePasswords,
@@ -11,8 +11,8 @@ import {
   generateTokenAndSetCookie,
   hashPassword,
   wrapError,
-} from "../config/utils.ts";
-import User from "../models/user.model.ts";
+} from "../config/utils"; // .js
+import User from "../models/user.model"; // .js
 
 export const signup = async (req: Request, res: Response) => {
   try {
