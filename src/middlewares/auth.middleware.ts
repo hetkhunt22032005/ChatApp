@@ -1,7 +1,8 @@
+"USE SCRIPT"
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model"; // .js
-
+"END"
 export const protectRoute = async (
   req: Request,
   res: Response,

@@ -1,10 +1,11 @@
+"USE SCRIPT"
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { log } from "console";
 import connectDB from "./config/db"; // .js
 import { V1Router } from "./routes/index.route"; // .js
-
+"END"
 const app = express();
 dotenv.config();
 

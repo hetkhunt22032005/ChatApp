@@ -1,3 +1,4 @@
+"USE SCRIPT"
 import { Request, Response } from "express";
 import {
   LoginSchema,
@@ -14,7 +15,7 @@ import {
 } from "../config/utils"; // .js
 import User from "../models/user.model"; // .js
 import cloudinary from "../config/cloudinary"; // .js
-
+"END"
 export const signup = async (req: Request, res: Response) => {
   try {
     // Input Validation
@@ -152,6 +153,19 @@ export const me = (req: Request, res: Response) => {
     // return
     res.status(200).json(user);
   } catch (error: any) {
-    console.log('Error in me controller: ', error.message);
+    console.log("Error in me controller: ", error.message);
   }
-}
+};
+
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const senderId = res.locals.user._id;
+    const userList = await User.find({ _id: { $ne: senderId } })
+      .select("fullname username profilePic")
+      .limit(15);
+    res.status(200).json(userList);
+  } catch (error: any) {
+    console.log("Error in getUsers Controller: ", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
