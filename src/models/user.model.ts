@@ -9,7 +9,6 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: true,
       unique: true,
     },
     password: {
@@ -33,6 +32,9 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Search index for users
+userSchema.index({ fullname: "text", username: "text" });
 
 const User = model("User", userSchema);
 

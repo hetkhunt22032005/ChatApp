@@ -5,14 +5,8 @@ export const SignUpSchemaL1 = z.object({
   fullname: z
     .string()
     .trim()
-    .min(1, { message: "Full name is required." })
+    .min(6, { message: "Full name must be atleast 6 characters long." })
     .max(255, { message: "Full name cannot be more than 255 characters." }),
-
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Email address is required" })
-    .max(320, { message: "Please enter a valid email address." }),
 
   password: z
     .string()
@@ -40,14 +34,30 @@ export const SignUpSchemaL2 = SignUpSchemaL1.extend({
     })
     .regex(/[0-9]/, { message: "Password must contain at least one digit." }),
 
-  username: z
-    .string()
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message: "Username can only contain letters, numbers, and underscores.",
-    }),
+  username: z.string().regex(/^[a-zA-Z0-9_]+$/, {
+    message: "Username can only contain letters, numbers, and underscores.",
+  }),
 });
 
 export const LoginSchema = z.object({
-  username: z.string().min(1, {message: 'Usernae is required.'}),
-  password: z.string().min(1, {message: 'Password is required.'})
+  username: z.string().min(1, { message: "Usernae is required." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
+export const updateSchema = z.object({
+  profilePic: z.string().optional(),
+
+  fullname: z
+    .string()
+    .trim()
+    .min(6, { message: "Full name must be atleast 6 characters long." })
+    .max(255, { message: "Full name cannot be more than 255 characters." })
+    .optional(),
+
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Email address is required" })
+    .max(320, { message: "Please enter a valid email address." })
+    .optional(),
 });

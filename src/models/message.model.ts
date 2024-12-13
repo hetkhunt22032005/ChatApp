@@ -1,22 +1,25 @@
 import { model, Schema } from "mongoose";
 
-const messageSchema = new Schema({
+const messageSchema = new Schema(
+  {
     senderId: {
-        type: Schema.Types.ObjectId,
-        required: true
+      type: Schema.Types.ObjectId,
+      required: true,
     },
     receiverId: {
-        type: Schema.Types.ObjectId,
-        required: true
+      type: Schema.Types.ObjectId,
+      required: true,
     },
     text: {
-        type: String,
+      type: String,
     },
     image: {
-        type: String
-    }
-}, {timestamps: true});
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-const Message = model('Message', messageSchema);
+const Message = model("Message", messageSchema);
 
 export default Message;

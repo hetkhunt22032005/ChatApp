@@ -1,9 +1,9 @@
-"USE SCRIPT"
+"USE SCRIPT";
 import { Request, Response } from "express";
 import Conversation from "../models/conversation.model"; // .js
 import cloudinary from "../config/cloudinary"; // .js
 import Message from "../models/message.model"; // .js
-"END"
+("END");
 export const sendMessage = async (req: Request, res: Response) => {
   try {
     // fetch the necessary fields
@@ -16,14 +16,11 @@ export const sendMessage = async (req: Request, res: Response) => {
       return;
     }
     // create or fetch the conversation
-    let conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
-    });
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants: [senderId, receiverId],
-      });
-    }
+    const conversation = await Conversation.findOneAndUpdate(
+      { participants: { $size: 2, $all: [senderId, receiverId] } },
+      { $setOnInsert: { participants: [senderId, receiverId] } },
+      { new: true, upsert: true }
+    );
     // Create a new message
     let imageUrl;
     // If image is provided, upload it to cloudinary
@@ -46,7 +43,15 @@ export const sendMessage = async (req: Request, res: Response) => {
     // return
     res.status(200).json({
       message: "Message sent successfully.",
-      newMessage,
+      newMessage: {
+        _id: newMessage._id,
+        senderId: newMessage.senderId,
+        receiverId: newMessage.receiverId,
+        text: newMessage.text,
+        image: newMessage.image,
+        createdAt: newMessage.createdAt,
+        updatedAt: newMessage.updatedAt,
+      },
     });
   } catch (error: any) {
     console.error("Error in sendMessage controller: ", error.message);
@@ -54,6 +59,7 @@ export const sendMessage = async (req: Request, res: Response) => {
   }
 };
 
+//TODO: Pagination remaining
 export const getMessages = async (req: Request, res: Response) => {
   try {
     // fetch the userId and receiverId
@@ -63,7 +69,10 @@ export const getMessages = async (req: Request, res: Response) => {
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
     })
-      .populate("messages")
+      .populate({
+        path: "messages",
+        options: { sort: { createdAt: -1 } },
+      })
       .populate({
         path: "participants",
         match: { _id: { $ne: senderId } },
@@ -77,6 +86,7 @@ export const getMessages = async (req: Request, res: Response) => {
   }
 };
 
+//TODO: Pagination remaining
 export const getContactList = async (req: Request, res: Response) => {
   try {
     // fetch the senderId
@@ -85,7 +95,8 @@ export const getContactList = async (req: Request, res: Response) => {
     const contacts = await Conversation.find({
       participants: { $in: [senderId] },
     })
-      .select("participants")
+      .select("participants updatedAt")
+      .sort({ updatedAt: -1 })
       .populate({
         path: "participants",
         match: { _id: { $ne: senderId } },
@@ -98,4 +109,3 @@ export const getContactList = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-

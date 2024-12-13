@@ -1,4 +1,4 @@
-"USE SCRIPT"
+"USE SCRIPT";
 import { Request, Response } from "express";
 import {
   LoginSchema,
@@ -15,19 +15,13 @@ import {
 } from "../config/utils"; // .js
 import User from "../models/user.model"; // .js
 import cloudinary from "../config/cloudinary"; // .js
-"END"
+("END");
 export const signup = async (req: Request, res: Response) => {
   try {
     // Input Validation
     const response1 = SignUpSchemaL1.parse(req.body);
     const response2 = SignUpSchemaL2.parse(response1);
-    // Unique Email
-    const isEmailExist = await User.findOne({ email: response2.email });
-    if (isEmailExist) {
-      res.status(400).json({ message: "Email already exists." });
-      return;
-    }
-    // Unique Username
+    // Unique username
     const isUsernameExist = await User.findOne({
       username: response2.username,
     });
@@ -121,31 +115,6 @@ export const logout = (req: Request, res: Response) => {
   }
 };
 
-export const updateProfile = async (req: Request, res: Response) => {
-  try {
-    // Input Validation
-    const { profilePic } = req.body;
-    const id = res.locals.user._id;
-    if (!profilePic) {
-      res.status(400).json({ message: "Profile pic is required." });
-      return;
-    }
-    // Upload to cloudinary server
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    // Update the database entry
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    ).select("-password");
-    // return
-    res.status(200).json(updatedUser);
-  } catch (error: any) {
-    console.log("Error in updateProfile Controller: ", error.message);
-    res.status(500).json({ message: "Internal Server Error." });
-  }
-};
-
 export const me = (req: Request, res: Response) => {
   try {
     // fetch the user from res
@@ -157,15 +126,3 @@ export const me = (req: Request, res: Response) => {
   }
 };
 
-export const getUsers = async (req: Request, res: Response) => {
-  try {
-    const senderId = res.locals.user._id;
-    const userList = await User.find({ _id: { $ne: senderId } })
-      .select("fullname username profilePic")
-      .limit(15);
-    res.status(200).json(userList);
-  } catch (error: any) {
-    console.log("Error in getUsers Controller: ", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};

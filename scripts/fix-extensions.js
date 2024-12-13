@@ -27,7 +27,7 @@ function replaceImportExtensions(filepath) {
     for (let i = 1; i < lines.length; i++) {
       // Optimization - 2: Checking the "END" flag for skipping further processing
       let line = lines[i];
-      if (line.trim() === '"END";') {
+      if (line.trim() === '("END");') {
         part1Array.push("");
         breakIndex = i + 1;
         console.log(`Break at ${i} in ${filepath}.`);
