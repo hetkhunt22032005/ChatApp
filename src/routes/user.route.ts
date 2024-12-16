@@ -1,7 +1,8 @@
+"USE SCRIPT";
 import { Router } from "express";
-import { protectRoute } from "../middlewares/auth.middleware";
-import { getUsers, updateProfile } from "../controllers/user.controller";
-
+import { protectRoute } from "../middlewares/auth.middleware"; // .js
+import { getUsers, updateProfile } from "../controllers/user.controller"; // .js
+("END");
 const userRouter = Router();
 
 userRouter.put("/update-profile", protectRoute, updateProfile);
