@@ -125,4 +125,3 @@ export const me = (req: Request, res: Response) => {
     console.log("Error in me controller: ", error.message);
   }
 };
-

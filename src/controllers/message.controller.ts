@@ -4,6 +4,7 @@ import Conversation from "../models/conversation.model"; // .js
 import cloudinary from "../config/cloudinary"; // .js
 import Message from "../models/message.model"; // .js
 ("END");
+// TODO: Microservice architecture for image upload.
 export const sendMessage = async (req: Request, res: Response) => {
   try {
     // fetch the necessary fields

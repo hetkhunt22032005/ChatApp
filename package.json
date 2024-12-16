@@ -12,7 +12,6 @@
   "author": "Krishil",
   "license": "ISC",
   "dependencies": {
-    "@types/cors": "^2.8.17",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
@@ -21,13 +20,16 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.4",
+    "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/ws": "^8.5.13",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

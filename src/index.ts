@@ -6,13 +6,14 @@ import { log } from "console";
 import cors from "cors";
 import connectDB from "./config/db"; // .js
 import { V1Router } from "./routes/index.route"; // .js
+import { app, httpServer } from "./websocket/socket"; // .js
 ("END");
-const app = express();
+
 dotenv.config();
 
 const Port = process.env.PORT || 3000;
 const Mongo_Uri = process.env.MONGO_URI || "mongodb://localhost:27017";
-const Client_Url = process.env.CLIENT_URL || "http://localhost:5173"; 
+const Client_Url = process.env.CLIENT_URL || "http://localhost:5173";
 
 app.use(express.json());
 app.use(cookieParser());
@@ -24,7 +25,7 @@ app.use(
 );
 app.use("/api/v1", V1Router);
 
-app.listen(Port, async () => {
+httpServer.listen(Port, async () => {
   await connectDB(Mongo_Uri);
   log(`Server is running on port ${Port}.`);
 });
