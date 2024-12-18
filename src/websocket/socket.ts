@@ -8,6 +8,7 @@ export const httpServer = http.createServer(app);
 
 const wss = new WebSocketServer({ server: httpServer });
 
-wss.on("connection", (ws) => {
+wss.on("connection", (ws, req) => {
+  console.log(req.headers.cookie);
   console.log("Client connected");
 });

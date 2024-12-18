@@ -2,6 +2,8 @@ import { ZodError } from "zod";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Response } from "express";
+import crypto from "crypto";
+import { v4 as uuidv4 } from "uuid";
 
 export const wrapError = (error: ZodError) => {
   const detailedErrors = error.errors.map((err) => ({
@@ -61,3 +63,54 @@ export const generateProfiePic = (
   const url = `${process.env.AVATAR_BASE_URL}/public/${field}?username=${username}`;
   return url;
 };
+
+export const generateRoomId = () => {
+  return uuidv4();
+};
+
+export const generateRoomToken = (roomId: string, participants: string[]) => {
+  const secret = process.env.ROOM_SECRET || "ROOM_SECRET";
+  const rookToken = jwt.sign({ roomId, participants }, secret);
+  return rookToken;
+};
+
+export const verifyRoomToken = (roomToken: string) => {
+  try {
+    const secret = process.env.JWT_SECRET || "JWT_SECRET";
+    const payload = jwt.verify(roomToken, secret) as jwt.JwtPayload & {
+      roomId: string;
+      participants: string[];
+    };
+    return { roomId: payload.roomId, participants: payload.participants };
+  } catch (error: any) {
+    console.log('Error in verifyRoomToken utility: ', error.message);
+  }
+};
+
+export const encryptRoomToken = (roomToken: string) => {
+  const key = process.env.ENCRYPTION_KEY || "ENCRYPTION_KEY";
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-gcm", Buffer.from(key), iv);
+  let encrypted = cipher.update(roomToken, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  const authTag = cipher.getAuthTag().toString("hex");
+  return `${encrypted}.${iv.toString("hex")}.${authTag}`;
+};
+
+export const decryptRoomToken = (encryptedRoomToken: string) => {
+  const [encrypted, iv, authTag] = encryptedRoomToken.split(".");
+  const key = process.env.ENCRYPTION_KEY || "ENCRYPTION_KEY";
+  const decipher = crypto.createDecipheriv('aes-256-gcm', Buffer.from(key), Buffer.from(iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(authTag, 'hex'));
+  let decrpted = decipher.update(encrypted, 'hex', 'utf8');
+  decrpted += decipher.final('utf8');
+  return decrpted;
+}
+
+export const encodeRoomToken = (encryptedRoomToken: string) => {
+  return Buffer.from(encryptedRoomToken).toString("base64");
+};
+
+export const decodeRoomToken = (encodedRoomToken: string) => {
+  return Buffer.from(encodedRoomToken, 'base64').toString('utf8');
+}

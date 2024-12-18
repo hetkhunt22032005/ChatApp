@@ -18,23 +18,23 @@ export const protectRoute = async (
     }
     // Verify token
     const secret = process.env.JWT_SECRET || "JWT SECRET";
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret) as jwt.JwtPayload & {
+      id: string;
+    };
     if (!decoded) {
       res.status(401).json({ message: "Unauthorized - Invalid token." });
       return;
     }
     // Fetch user details from db
-    if (typeof decoded === "object" && "id" in decoded) {
-      const user = await User.findById(decoded.id).select("-password");
-      if (!user) {
-        res.status(404).json({ message: "User not found." });
-        return;
-      }
-      // Attach user to request object
-      res.locals.user = user;
-      // Next
-      next();
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
     }
+    // Attach user to request object
+    res.locals.user = user;
+    // Next
+    next();
   } catch (error: any) {
     console.log("Error in protectRoute Middleware: ", error.message);
     res.status(500).json({ message: "Internal Server Error." });

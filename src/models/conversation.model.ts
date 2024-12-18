@@ -2,6 +2,10 @@ import { model, Schema } from "mongoose";
 
 const conversationSchema = new Schema(
   {
+    room: {
+      type: String,
+      required: true
+    },
     participants: [
       {
         type: Schema.Types.ObjectId,

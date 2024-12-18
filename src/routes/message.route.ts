@@ -3,13 +3,13 @@ import { Router } from "express";
 import {
   getContactList,
   getMessages,
-  sendMessage,
+  newConversation,
 } from "../controllers/message.controller"; // .js
 import { protectRoute } from "../middlewares/auth.middleware"; // .js
 ("END");
 const messageRouter = Router();
 
-messageRouter.post("/send/:id", protectRoute, sendMessage);
+messageRouter.post("/newConversation/:id", protectRoute, newConversation);
 
 messageRouter.get("/conversation/:id", protectRoute, getMessages);
 
