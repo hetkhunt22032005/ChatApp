@@ -1,6 +1,9 @@
-import express from "express";
+"USE SCRIPT";
+import express, { Request } from "express";
 import http from "http";
-import { WebSocketServer } from "ws";
+import WebSocket, { WebSocketServer } from "ws";
+import { UserManager } from "./UserManager"; // .js
+("END");
 
 export const app = express();
 
@@ -8,7 +11,6 @@ export const httpServer = http.createServer(app);
 
 const wss = new WebSocketServer({ server: httpServer });
 
-wss.on("connection", (ws, req) => {
-  console.log(req.headers.cookie);
-  console.log("Client connected");
+wss.on("connection", (ws: WebSocket, req: Request) => {
+  UserManager.getInstance().addUser(ws, req);
 });
