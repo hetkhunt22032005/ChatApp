@@ -3,7 +3,12 @@ import { Request, Response } from "express";
 import Conversation from "../models/conversation.model"; // .js
 import cloudinary from "../config/cloudinary"; // .js
 import Message from "../models/message.model"; // .js
-import { encodeRoomToken, encryptRoomToken, generateRoomId, generateRoomToken } from "../config/utils";
+import {
+  encodeRoomToken,
+  encryptRoomToken,
+  generateRoomId,
+  generateRoomToken,
+} from "../config/utils"; // .js
 ("END");
 
 export const newConversation = async (req: Request, res: Response) => {
@@ -16,6 +21,15 @@ export const newConversation = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Invalid receiver ID." });
       return;
     }
+    // Check for existing conversation
+    const existingConversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] },
+      $expr: { $eq: [{ $size: "$participants" }, 2] },
+    });
+    if (existingConversation) {
+      res.status(400).json({ message: "Conversation already exists." });
+      return;
+    }
     // Get a room id
     const roomId = generateRoomId();
     // Generate the room token
@@ -25,17 +39,16 @@ export const newConversation = async (req: Request, res: Response) => {
     // Encode the room token
     const securedRoomToken = encodeRoomToken(encryptedRoomToken);
     // create the conversation
-    const conversation = await Conversation.findOneAndUpdate(
-      { participants: { $size: 2, $all: [senderId, receiverId] } },
-      { $setOnInsert: { participants: [senderId, receiverId] }, room: securedRoomToken },
-      { new: true, upsert: true }
-    );
+    const conversation = new Conversation({
+      room: securedRoomToken,
+      participants: [senderId, receiverId],
+    });
 
     res.status(200).json({
       message: "Conversation created successfully.",
       senderId,
       receiverId,
-      room: conversation.room
+      room: conversation.room,
     });
   } catch (error: any) {
     console.error("Error in sendMessage controller: ", error.message);
@@ -84,7 +97,7 @@ export const getContactList = async (req: Request, res: Response) => {
       .populate({
         path: "participants",
         match: { _id: { $ne: senderId } },
-        select: "fullname profilePic",
+        select: "fullname username profilePic",
       });
     // return
     res.status(200).json(contacts);

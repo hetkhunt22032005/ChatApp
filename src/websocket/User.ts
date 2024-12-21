@@ -1,6 +1,15 @@
 "USE SCRIPT";
 import WebSocket from "ws";
-import { Message, SENDMESSAGE, SUBSCRIBE, UNSUBSCRIBE } from "./types";
+import {
+  ERRORMESSAGE,
+  ErrorMessage,
+  Message,
+  SendMessage,
+  SENDMESSAGE,
+  SUBSCRIBE,
+  UNSUBSCRIBE,
+} from "./types"; // .js
+import { RoomManager } from "./RoomManager"; // .js
 ("END");
 
 export class User {
@@ -13,7 +22,7 @@ export class User {
     this.addListener();
   }
 
-  public emit(message: string) {
+  public emit(message: SendMessage | ErrorMessage) {
     this.ws.send(JSON.stringify(message));
   }
 
@@ -24,24 +33,32 @@ export class User {
         parsedMessage = JSON.parse(message);
       } catch (error: any) {
         console.log("Error in parsing incoming message: ", error.message);
-        this.emit("Invalid format of message");
+        this.emit({
+          method: ERRORMESSAGE,
+          message: "Invalid format of message",
+        });
         return;
       }
       // Check for the same user.
       if (parsedMessage.senderId !== this.id) {
-        this.emit("Malicious user");
+        this.emit({ method: ERRORMESSAGE, message: "Malicious user" });
         return;
       }
+      console.log(parsedMessage);
       // Handling different types of messages.
       switch (parsedMessage.method) {
         case SUBSCRIBE:
+          console.log("Inside");
+          parsedMessage.rooms.forEach((room) =>
+            RoomManager.getInstance().subscribe(room, this.id)
+          );
           break;
         case SENDMESSAGE:
           break;
         case UNSUBSCRIBE:
           break;
         default:
-          this.emit("Invalid method");
+          this.emit({ method: ERRORMESSAGE, message: "Invalid method" });
           break;
       }
     });
