@@ -13,9 +13,14 @@ import {
 
 dotenv.config();
 
+interface RoomMetadata {
+  roomId: string;
+  participants: string[];
+}
+
 export class AuthManager {
   private static instance: AuthManager;
-  private roomParticipants: Map<String, String[]>;
+  private roomParticipants: Map<String, RoomMetadata>;
 
   private constructor() {
     this.roomParticipants = new Map();
@@ -42,7 +47,6 @@ export class AuthManager {
       ws.close();
       return undefined;
     }
-
     const id = this.validateToken(ws, token);
     return id;
   }
@@ -69,6 +73,10 @@ export class AuthManager {
   }
 
   public validateRoom(room: string, senderId: string) {
+    const cache = this.roomParticipants.get(room);
+    if (cache && cache.participants.includes(senderId)) {
+      return cache.roomId;
+    }
     const decodedRoomToken = decodeRoomToken(room);
     if (!decodedRoomToken) {
       console.log("Invalid room");
@@ -84,13 +92,9 @@ export class AuthManager {
       console.log("Sender not part of the room");
       return undefined;
     }
-    if(!this.roomParticipants.has(room)) {
-      this.roomParticipants.set(room, payload.participants);
+    if (!this.roomParticipants.has(room)) {
+      this.roomParticipants.set(room, payload);
     }
     return payload.roomId;
-  }
-
-  public isUserPartOfRoom(room: string, senderId: string) {
-    this.roomParticipants.get(room)?.includes(senderId);
   }
 }

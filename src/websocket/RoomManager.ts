@@ -28,8 +28,11 @@ export class RoomManager {
 
   public async connectRedis() {
     try {
-      await Promise.all([this.subscriberClient.connect(), this.publisherClient.connect()]);
-      console.log('Redis connected successfully.');
+      await Promise.all([
+        this.subscriberClient.connect(),
+        this.publisherClient.connect(),
+      ]);
+      console.log("Redis connected successfully.");
     } catch (error) {
       console.log("Connection error in redis client: ", error);
       process.exit(1);
@@ -65,6 +68,20 @@ export class RoomManager {
     }
   }
 
+  public publish(room: string, userId: string, message: string) {
+    const roomId = AuthManager.getInstance().validateRoom(room, userId);
+    if (!roomId) {
+      UserManager.getInstance()
+        .getUser(userId)
+        ?.emit({
+          method: ERRORMESSAGE,
+          message: "Unauthorised: Invalid room or not authorised",
+        });
+      return;
+    }
+    this.publisherClient.publish(roomId, message);
+  }
+
   private redisCallbackHandler(message: string, roomId: string) {
     const parsedMessage: SendMessage = JSON.parse(message);
     this.reverseSubscriptions.get(roomId)?.forEach((subscriber) => {
@@ -76,13 +93,19 @@ export class RoomManager {
 
   public unsubscribe(userId: string, roomId: string) {
     const subscriptions = this.subscriptions.get(userId);
-    if(subscriptions) {
-      this.subscriptions.set(userId, subscriptions.filter(room => room !== roomId));
+    if (subscriptions) {
+      this.subscriptions.set(
+        userId,
+        subscriptions.filter((room) => room !== roomId)
+      );
     }
     const reverseSubscriptions = this.reverseSubscriptions.get(roomId);
-    if(reverseSubscriptions) {
-      this.reverseSubscriptions.set(roomId, reverseSubscriptions.filter(subsciber => subsciber !== userId));
-      if(this.reverseSubscriptions.get(roomId)?.length === 0) {
+    if (reverseSubscriptions) {
+      this.reverseSubscriptions.set(
+        roomId,
+        reverseSubscriptions.filter((subsciber) => subsciber !== userId)
+      );
+      if (this.reverseSubscriptions.get(roomId)?.length === 0) {
         this.reverseSubscriptions.delete(roomId);
         this.subscriberClient.unsubscribe(roomId);
       }
@@ -90,8 +113,10 @@ export class RoomManager {
   }
 
   public userLeft(userId: string) {
-    console.log('Clinet left: ', userId);
-    this.subscriptions.get(userId)?.forEach((roomId) => this.unsubscribe(userId, roomId));
+    console.log("Clinet left: ", userId);
+    this.subscriptions
+      .get(userId)
+      ?.forEach((roomId) => this.unsubscribe(userId, roomId));
     this.subscriptions.delete(userId);
   }
 }
