@@ -7,6 +7,7 @@ import cors from "cors";
 import connectDB from "./config/db"; // .js
 import { V1Router } from "./routes/index.route"; // .js
 import { app, httpServer } from "./websocket/socket"; // .js
+import { RoomManager } from "./websocket/RoomManager"; // .js
 ("END");
 
 dotenv.config();
@@ -27,5 +28,6 @@ app.use("/api/v1", V1Router);
 
 httpServer.listen(Port, async () => {
   await connectDB(Mongo_Uri);
+  await RoomManager.getInstance().connectRedis();
   log(`Server is running on port ${Port}.`);
 });

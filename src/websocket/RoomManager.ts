@@ -17,13 +17,6 @@ export class RoomManager {
     this.reverseSubscriptions = new Map();
     this.subscriberClient = createClient();
     this.publisherClient = createClient();
-    try {
-      this.subscriberClient.connect();
-      this.publisherClient.connect();
-    } catch (error) {
-      console.log("COnnection error in redis client: ", error);
-      process.exit(1);
-    }
   }
 
   public static getInstance(): RoomManager {
@@ -31,6 +24,16 @@ export class RoomManager {
       this.instance = new RoomManager();
     }
     return this.instance;
+  }
+
+  public async connectRedis() {
+    try {
+      await Promise.all([this.subscriberClient.connect(), this.publisherClient.connect()]);
+      console.log('Redis connected successfully.');
+    } catch (error: any) {
+      console.log("Connection error in redis client: ", error.message);
+      process.exit(1);
+    }
   }
 
   public subscribe(room: string, id: string) {

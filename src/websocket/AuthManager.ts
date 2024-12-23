@@ -15,8 +15,11 @@ dotenv.config();
 
 export class AuthManager {
   private static instance: AuthManager;
+  private roomParticipants: Map<String, String[]>;
 
-  private constructor() {}
+  private constructor() {
+    this.roomParticipants = new Map();
+  }
 
   public static getInstance(): AuthManager {
     if (!this.instance) {
@@ -81,6 +84,14 @@ export class AuthManager {
       console.log("Sender not part of the room");
       return undefined;
     }
+    if(!this.roomParticipants.has(room)) {
+      this.roomParticipants.set(room, payload.participants);
+    }
+    console.log(this.roomParticipants);
     return payload.roomId;
+  }
+
+  public isUserPartOfRoom(room: string, senderId: string) {
+    this.roomParticipants.get(room)?.includes(senderId);
   }
 }
