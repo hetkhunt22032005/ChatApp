@@ -13,11 +13,11 @@ import { RoomManager } from "./RoomManager"; // .js
 ("END");
 
 export class User {
-  private id: string;
+  private userId: string;
   private ws: WebSocket;
 
-  constructor(id: string, ws: WebSocket) {
-    this.id = id;
+  constructor(userId: string, ws: WebSocket) {
+    this.userId = userId;
     this.ws = ws;
     this.addListener();
   }
@@ -28,6 +28,7 @@ export class User {
 
   private addListener() {
     this.ws.on("message", (message: string) => {
+      // Safe parsing the message
       let parsedMessage: Message;
       try {
         parsedMessage = JSON.parse(message);
@@ -40,17 +41,16 @@ export class User {
         return;
       }
       // Check for the same user.
-      if (parsedMessage.senderId !== this.id) {
+      if (parsedMessage.senderId !== this.userId) {
         this.emit({ method: ERRORMESSAGE, message: "Malicious user" });
         return;
       }
       console.log(parsedMessage);
-      // Handling different types of messages.
+      // Handling different types of methods/events.
       switch (parsedMessage.method) {
         case SUBSCRIBE:
-          console.log("Inside");
           parsedMessage.rooms.forEach((room) =>
-            RoomManager.getInstance().subscribe(room, this.id)
+            RoomManager.getInstance().subscribe(room, this.userId)
           );
           break;
         case SENDMESSAGE:

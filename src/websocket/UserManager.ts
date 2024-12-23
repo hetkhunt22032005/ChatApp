@@ -3,6 +3,7 @@ import { Request } from "express";
 import { User } from "./User"; // .js
 import { AuthManager } from "./AuthManager"; // .js
 import WebSocket from "ws";
+import { RoomManager } from "./RoomManager";
 ("END");
 
 export class UserManager {
@@ -21,20 +22,21 @@ export class UserManager {
   }
 
   public addUser(ws: WebSocket, req: Request) {
-    const id = AuthManager.getInstance().validateUser(ws, req);
-    if (!id) {
+    const userId = AuthManager.getInstance().validateUser(ws, req);
+    if (!userId) {
       return;
     }
-    const user = new User(id, ws);
-    this.users.set(id, user);
-    this.registerOnClose(ws, id);
-    console.log("Client connected: ", id);
+    const user = new User(userId, ws);
+    this.users.set(userId, user);
+    this.registerOnClose(ws, userId);
+    console.log("Client connected: ", userId);
     return user;
   }
 
-  private registerOnClose(ws: WebSocket, id: string) {
+  private registerOnClose(ws: WebSocket, userId: string) {
     ws.on("close", () => {
-      this.users.delete(id);
+      this.users.delete(userId);
+      RoomManager.getInstance().userLeft(userId);
     });
   }
 

@@ -30,8 +30,8 @@ export class RoomManager {
     try {
       await Promise.all([this.subscriberClient.connect(), this.publisherClient.connect()]);
       console.log('Redis connected successfully.');
-    } catch (error: any) {
-      console.log("Connection error in redis client: ", error.message);
+    } catch (error) {
+      console.log("Connection error in redis client: ", error);
       process.exit(1);
     }
   }
@@ -72,5 +72,26 @@ export class RoomManager {
         UserManager.getInstance().getUser(subscriber)?.emit(parsedMessage);
       }
     });
+  }
+
+  public unsubscribe(userId: string, roomId: string) {
+    const subscriptions = this.subscriptions.get(userId);
+    if(subscriptions) {
+      this.subscriptions.set(userId, subscriptions.filter(room => room !== roomId));
+    }
+    const reverseSubscriptions = this.reverseSubscriptions.get(roomId);
+    if(reverseSubscriptions) {
+      this.reverseSubscriptions.set(roomId, reverseSubscriptions.filter(subsciber => subsciber !== userId));
+      if(this.reverseSubscriptions.get(roomId)?.length === 0) {
+        this.reverseSubscriptions.delete(roomId);
+        this.subscriberClient.unsubscribe(roomId);
+      }
+    }
+  }
+
+  public userLeft(userId: string) {
+    console.log('Clinet left: ', userId);
+    this.subscriptions.get(userId)?.forEach((roomId) => this.unsubscribe(userId, roomId));
+    this.subscriptions.delete(userId);
   }
 }

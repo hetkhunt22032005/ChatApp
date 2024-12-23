@@ -87,7 +87,6 @@ export class AuthManager {
     if(!this.roomParticipants.has(room)) {
       this.roomParticipants.set(room, payload.participants);
     }
-    console.log(this.roomParticipants);
     return payload.roomId;
   }
 
