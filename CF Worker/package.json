@@ -1,10 +1,11 @@
 {
-  "name": "Serverless",
+  "name": "chatapp-file-upload-service",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
+    "cloudinary": "^2.5.1",
     "hono": "^4.6.14"
   },
   "devDependencies": {
