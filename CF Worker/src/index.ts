@@ -4,7 +4,7 @@ import {
   authenticateClient,
   authenticateWebhook,
 } from "@middlewares/auth.middleware";
-import { MetaData } from "./schema/data.schema";
+import { IMAGENOTIFICATION, MetaData } from "./schema/data.schema";
 import { v2 as cloudinary } from "cloudinary";
 
 const app = new Hono<{
@@ -22,7 +22,7 @@ app.post("/generate-signed-url", authenticateClient, async (c) => {
     const { tempId, room } = (await c.req.json()) as MetaData;
     const senderId = c.get("senderId");
     // Input Validation
-    if(!tempId || !room) {
+    if (!tempId || !room) {
       return c.json({ message: "Invalid metadata provided." }, 400);
     }
     // Create the timestamp (Valid for 2 minutes)
@@ -59,8 +59,37 @@ app.post("/generate-signed-url", authenticateClient, async (c) => {
   }
 });
 
-app.post("/wh/image/:whsecret", authenticateWebhook, (c) => {
-  return c.text("ChatApp - image webhook");
+app.post("/wh/image/:whsecret", authenticateWebhook, async (c) => {
+  // Fetching the necessary data
+  const {
+    secure_url,
+    asset_folder,
+    context: {
+      custom: { tempId, room },
+    },
+  } = await c.req.json();
+  // Input validation
+  if (
+    !secure_url ||
+    asset_folder === "" ||
+    !asset_folder.includes("/") ||
+    !tempId ||
+    !room
+  ) {
+    return c.json({ message: "Invalid data provided." }, 400);
+  }
+  // Fetching senderId
+  const senderId = asset_folder.split("/")[1] as string;
+  // Creating the message object
+  const message = {
+    method: IMAGENOTIFICATION,
+    room,
+    senderId,
+    tempId,
+    image_url: secure_url,
+  };
+  // Throw in queue
+  return c.json(message, 200);
 });
 
 export default app;
