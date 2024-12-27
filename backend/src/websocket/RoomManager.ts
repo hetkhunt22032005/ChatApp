@@ -2,7 +2,7 @@
 import { createClient, RedisClientType } from "redis";
 import { AuthManager } from "./AuthManager"; // .js
 import { UserManager } from "./UserManager"; // .js
-import { ERRORMESSAGE, SendMessage } from "./types"; // .js
+import { ERRORMESSAGE, ImageNotification, SendMessage } from "./types"; // .js
 import { MessageManager } from "./MessageManager";
 ("END");
 
@@ -33,6 +33,10 @@ export class RoomManager {
         this.subscriberClient.connect(),
         this.publisherClient.connect(),
       ]);
+      this.subscriberClient.subscribe(
+        "imagenotification",
+        this.redisImageHandler
+      );
       console.log("Redis connected successfully.");
     } catch (error) {
       console.log("Connection error in redis client: ", error);
@@ -74,7 +78,7 @@ export class RoomManager {
     );
 
     if (this.reverseSubscriptions.get(roomId)?.length === 1) {
-      this.subscriberClient.subscribe(roomId, this.redisCallbackHandler);
+      this.subscriberClient.subscribe(roomId, this.redisMessageHandler);
     }
   }
 
@@ -106,13 +110,37 @@ export class RoomManager {
     // throw it to queue.
   }
 
-  private redisCallbackHandler(message: string, roomId: string) {
+  private redisMessageHandler(message: string, roomId: string) {
     const parsedMessage: SendMessage = JSON.parse(message);
     this.reverseSubscriptions.get(roomId)?.forEach((subscriber) => {
       if (parsedMessage.senderId !== subscriber) {
         UserManager.getInstance().getUser(subscriber)?.emit(message);
       }
     });
+  }
+
+  private redisImageHandler(message: string) {
+    const parsedMessage: ImageNotification = JSON.parse(message);
+    const roomId = AuthManager.getInstance().validateRoom(
+      parsedMessage.room,
+      parsedMessage.senderId
+    );
+    if (!roomId) {
+      UserManager.getInstance()
+        .getUser(parsedMessage.senderId)
+        ?.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Unauthorised: Invalid room or not authorised",
+          })
+        );
+      return;
+    }
+    this.reverseSubscriptions
+      .get(roomId)
+      ?.forEach((subscriber) =>
+        UserManager.getInstance().getUser(subscriber)?.emit(message)
+      );
   }
 
   public unsubscribe(userId: string, roomId: string) {
