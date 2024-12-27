@@ -3,6 +3,7 @@ import { createClient, RedisClientType } from "redis";
 import { AuthManager } from "./AuthManager"; // .js
 import { UserManager } from "./UserManager"; // .js
 import { ERRORMESSAGE, SendMessage } from "./types"; // .js
+import { MessageManager } from "./MessageManager";
 ("END");
 
 export class RoomManager {
@@ -42,16 +43,25 @@ export class RoomManager {
   public subscribe(room: string, id: string) {
     const roomId = AuthManager.getInstance().validateRoom(room, id);
     if (!roomId) {
-      UserManager.getInstance().getUser(id)?.emit({
-        method: ERRORMESSAGE,
-        message: "Unauthorised: Invalid room or not authorised",
-      });
+      UserManager.getInstance()
+        .getUser(id)
+        ?.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Unauthorised: Invalid room or not authorised",
+          })
+        );
       return;
     }
     if (this.subscriptions.get(id)?.includes(roomId)) {
       UserManager.getInstance()
         .getUser(id)
-        ?.emit({ method: ERRORMESSAGE, message: "Already subscribed to room" });
+        ?.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Already subscribed to room",
+          })
+        );
       return;
     }
     this.subscriptions.set(
@@ -68,25 +78,39 @@ export class RoomManager {
     }
   }
 
-  public publish(room: string, userId: string, message: string) {
+  public publish(room: string, userId: string, message: SendMessage) {
     const roomId = AuthManager.getInstance().validateRoom(room, userId);
     if (!roomId) {
       UserManager.getInstance()
         .getUser(userId)
-        ?.emit({
-          method: ERRORMESSAGE,
-          message: "Unauthorised: Invalid room or not authorised",
-        });
+        ?.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Unauthorised: Invalid room or not authorised",
+          })
+        );
       return;
     }
-    this.publisherClient.publish(roomId, message);
+    const processedMessage =
+      MessageManager.getInstance().processMessage(message);
+    if (!processedMessage)
+      UserManager.getInstance()
+        .getUser(userId)
+        ?.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Cannot sent empty message.",
+          })
+        );
+    this.publisherClient.publish(roomId, JSON.stringify(processedMessage));
+    // throw it to queue.
   }
 
   private redisCallbackHandler(message: string, roomId: string) {
     const parsedMessage: SendMessage = JSON.parse(message);
     this.reverseSubscriptions.get(roomId)?.forEach((subscriber) => {
       if (parsedMessage.senderId !== subscriber) {
-        UserManager.getInstance().getUser(subscriber)?.emit(parsedMessage);
+        UserManager.getInstance().getUser(subscriber)?.emit(message);
       }
     });
   }
@@ -107,6 +131,7 @@ export class RoomManager {
       );
       if (this.reverseSubscriptions.get(roomId)?.length === 0) {
         this.reverseSubscriptions.delete(roomId);
+        AuthManager.getInstance().clearRoomCache(roomId);
         this.subscriberClient.unsubscribe(roomId);
       }
     }

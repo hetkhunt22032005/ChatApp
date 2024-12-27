@@ -2,9 +2,7 @@
 import WebSocket from "ws";
 import {
   ERRORMESSAGE,
-  ErrorMessage,
   Message,
-  SendMessage,
   SENDMESSAGE,
   SUBSCRIBE,
   UNSUBSCRIBE,
@@ -22,7 +20,7 @@ export class User {
     this.addListener();
   }
 
-  public emit(message: SendMessage | ErrorMessage) {
+  public emit(message: string) {
     this.ws.send(JSON.stringify(message));
   }
 
@@ -34,15 +32,15 @@ export class User {
         parsedMessage = JSON.parse(message);
       } catch (error: any) {
         console.log("Error in parsing incoming message: ", error.message);
-        this.emit({
+        this.emit(JSON.stringify({
           method: ERRORMESSAGE,
           message: "Invalid format of message",
-        });
+        }));
         return;
       }
       // Check for the same user.
       if (parsedMessage.senderId !== this.userId) {
-        this.emit({ method: ERRORMESSAGE, message: "Malicious user" });
+        this.emit(JSON.stringify({ method: ERRORMESSAGE, message: "Malicious user" }));
         return;
       }
       console.log(parsedMessage);
@@ -54,11 +52,12 @@ export class User {
           );
           break;
         case SENDMESSAGE:
+          RoomManager.getInstance().publish(parsedMessage.room, parsedMessage.senderId, parsedMessage);
           break;
         case UNSUBSCRIBE:
           break;
         default:
-          this.emit({ method: ERRORMESSAGE, message: "Invalid method" });
+          this.emit(JSON.stringify({ method: ERRORMESSAGE, message: "Invalid method" }));
           break;
       }
     });

@@ -2,6 +2,7 @@ export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
 export const SENDMESSAGE = "SENDMESSAGE";
 export const ERRORMESSAGE = "ERRORMESSAGE";
+export const PROCESSEDMESSAGE = "PROCESSEDMESSAGE";
 
 export type SubscribeMessage = {
   method: typeof SUBSCRIBE;
@@ -16,10 +17,15 @@ export type UnsubscribeMessage = {
 };
 
 export type SendMessage = {
-  method: typeof SENDMESSAGE;
+  method: typeof SENDMESSAGE | typeof PROCESSEDMESSAGE;
   room: string;
-  message: string;
   senderId: string;
+  tempId: string;
+  content: {
+    text?: string;
+    image: false | "pending";
+  };
+  createdAt: Date;
 };
 
 export type ErrorMessage = {

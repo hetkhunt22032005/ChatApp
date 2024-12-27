@@ -21,9 +21,11 @@ interface RoomMetadata {
 export class AuthManager {
   private static instance: AuthManager;
   private roomParticipants: Map<String, RoomMetadata>;
+  private roomIdToRoom: Map<String, String>;
 
   private constructor() {
     this.roomParticipants = new Map();
+    this.roomIdToRoom = new Map();
   }
 
   public static getInstance(): AuthManager {
@@ -94,7 +96,16 @@ export class AuthManager {
     }
     if (!this.roomParticipants.has(room)) {
       this.roomParticipants.set(room, payload);
+      this.roomIdToRoom.set(payload.roomId, room);
     }
     return payload.roomId;
+  }
+
+  public clearRoomCache(roomId: string) {
+    const room = this.roomIdToRoom.get(roomId);
+    if(room) {
+      this.roomParticipants.delete(room);
+      this.roomIdToRoom.delete(roomId);
+    }
   }
 }
