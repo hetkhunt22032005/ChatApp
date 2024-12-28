@@ -34,7 +34,7 @@ export class RoomManager {
         this.publisherClient.connect(),
       ]);
       this.subscriberClient.subscribe(
-        "imagenotification",
+        "image-notification",
         this.redisImageHandler
       );
       console.log("Redis connected successfully.");
