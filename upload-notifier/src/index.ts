@@ -2,7 +2,6 @@ import { createClient } from "redis";
 // Create the redis client instance
 const client = createClient();
 
-// TODO: Implemet the resilience mechanism
 async function main() {
   try {
     // Connect to Redis server

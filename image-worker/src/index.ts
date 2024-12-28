@@ -6,6 +6,7 @@ import {
 } from "@middlewares/auth.middleware";
 import { IMAGENOTIFICATION, MetaData } from "./schema/data.schema";
 import { v2 as cloudinary } from "cloudinary";
+import { createClient } from "redis";
 
 const app = new Hono<{
   Bindings: Bindings;
@@ -89,7 +90,17 @@ app.post("/wh/image/:whsecret", authenticateWebhook, async (c) => {
     image_url: secure_url,
   };
   // Throw in queue
-  return c.json(message, 200);
+  try {
+    // Creating the redis connection
+    const client = createClient();
+    await client.connect();
+    // Pushing to the queue
+    await client.lPush("user-uploads", JSON.stringify(message));
+  } catch (error) {
+    console.log('Error in redis connection: ', error);
+    return c.json({message: "Failure"}, 500);
+  }
+  return c.json({message: "Success"}, 200);
 });
 
 export default app;
