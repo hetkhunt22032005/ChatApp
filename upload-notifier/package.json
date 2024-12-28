@@ -1,0 +1,14 @@
+{
+  "name": "upload-notifier",
+  "version": "1.0.0",
+  "description": "A publisher service for the upload notification of images to cloudinary.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Krishil",
+  "license": "ISC",
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
+}
