@@ -14,7 +14,6 @@ import {
   wrapError,
 } from "../config/utils"; // .js
 import User from "../models/user.model"; // .js
-import cloudinary from "../config/cloudinary"; // .js
 ("END");
 export const signup = async (req: Request, res: Response) => {
   try {

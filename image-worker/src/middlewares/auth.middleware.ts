@@ -36,19 +36,3 @@ export const authenticateClient = createMiddleware(async (c, next) => {
     }
   }
 });
-
-export const authenticateWebhook = createMiddleware(async (c, next) => {
-  try {
-    // Fetch the webhook secret
-    const whsecret = c.req.param("whsecret");
-    // Validate the webhook secret
-    if (c.env.WH_SECRET !== whsecret) {
-      return c.json({ messsage: "Unauthorized" }, 400);
-    }
-    // next
-    await next();
-  } catch (error: any) {
-    console.log("Error in authenticateWebhook middleware: " + error.message);
-    return c.json({ message: "Internal server error." }, 500);
-  }
-});

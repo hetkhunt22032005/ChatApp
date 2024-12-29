@@ -1,31 +1,32 @@
-import { createClient } from "redis";
-// Create the redis client instance
-const client = createClient();
+import express from "express";
+import authenticateWebhook from "./middlewares/auth.middleware";
+import { WebHookManager } from "./managers/WebHookManager";
+import { PubSubManager } from "./managers/PubSubManager";
+import dotenv from "dotenv";
 
-async function main() {
-  try {
-    // Connect to Redis server
-    await client.connect();
-    console.log("Client connected to Redis successfully.");
-    // Start consuming messages from the "user-uploads" list
-    let message;
-    while (true) {
-      try {
-        // Pop the message from the "user-uploads" list
-        message = await client.brPop("user-uploads", 0);
-        // Publish the message to the "image-notification" channel
-        await client.publish("image-notification", message.element);
-        // Log the message
-        console.log('Message published successfully: ', message);
-      } catch (error) {
-        console.log("Error in publishing message to pub-sub: ", error);
-        // Add the message back to the "user-uploads" list to retry later
-        await client.lPush("user-uploads", message.element);
-      }
-    }
-  } catch (error) {
-    console.log("Failed to connect to Redis: ", error);
-  }
-}
+// Create the express server
+const app = express();
 
-main();
+// Load environment variables
+dotenv.config();
+
+// Body parser
+app.use(express.json());
+
+// Webhook handlers
+app.post(
+  "/wh/image/:whsecret",
+  authenticateWebhook,
+  WebHookManager.getInstance().imageWehookHandler
+);
+
+// Home route
+app.get("/", (req, res) => {
+  res.status(200).json({message: "ChatApp - Upload Notifier"});
+});
+
+// Start the server
+app.listen(3000, async () => {
+  await PubSubManager.getInstance().connectRedis();
+  console.log("Server is running on port 3000.");
+});

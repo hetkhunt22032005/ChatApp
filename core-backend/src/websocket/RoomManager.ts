@@ -107,7 +107,6 @@ export class RoomManager {
           })
         );
     this.publisherClient.publish(roomId, JSON.stringify(processedMessage));
-    // throw it to queue.
   }
 
   private redisMessageHandler(message: string, roomId: string) {

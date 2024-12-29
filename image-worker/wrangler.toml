@@ -9,7 +9,6 @@ CLOUDINARY_CLOUD_NAME =
 CLOUDINARY_API_KEY = 
 CLOUDINARY_API_SECRET = 
 JWT_SECRET = 
-WH_SECRET = 
 
 [observability.logs]
 enabled = true
