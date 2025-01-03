@@ -1,6 +1,6 @@
 "USE SCRIPT";
 import { Request } from "express";
-import { User } from "./User"; // .js
+import { User } from "../types/User"; // .js
 import { AuthManager } from "./AuthManager"; // .js
 import WebSocket from "ws";
 import { RoomManager } from "./RoomManager";

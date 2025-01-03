@@ -7,7 +7,7 @@ import {
   SUBSCRIBE,
   UNSUBSCRIBE,
 } from "./types"; // .js
-import { RoomManager } from "./RoomManager"; // .js
+import { RoomManager } from "../managers/RoomManager"; // .js
 ("END");
 
 export class User {

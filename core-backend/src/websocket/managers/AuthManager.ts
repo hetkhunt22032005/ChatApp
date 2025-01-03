@@ -8,7 +8,7 @@ import {
   decodeRoomToken,
   decryptRoomToken,
   verifyRoomToken,
-} from "../config/utils"; // .js
+} from "../../config/utils"; // .js
 ("END");
 
 dotenv.config();

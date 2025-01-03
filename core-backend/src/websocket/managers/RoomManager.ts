@@ -2,7 +2,7 @@
 import { createClient, RedisClientType } from "redis";
 import { AuthManager } from "./AuthManager"; // .js
 import { UserManager } from "./UserManager"; // .js
-import { ERRORMESSAGE, ImageNotification, SendMessage } from "./types"; // .js
+import { ERRORMESSAGE, ImageNotification, SendMessage } from "../types/types"; // .js
 import { MessageManager } from "./MessageManager";
 ("END");
 

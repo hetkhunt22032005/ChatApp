@@ -2,7 +2,7 @@
 import express, { Request } from "express";
 import http from "http";
 import WebSocket, { WebSocketServer } from "ws";
-import { UserManager } from "./UserManager"; // .js
+import { UserManager } from "./managers/UserManager"; // .js
 ("END");
 
 export const app = express();

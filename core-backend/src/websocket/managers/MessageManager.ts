@@ -1,4 +1,4 @@
-import { PROCESSEDMESSAGE, SendMessage } from "./types";
+import { PROCESSEDMESSAGE, SendMessage } from "../types/types";
 
 export class MessageManager {
     public static instance: MessageManager;
