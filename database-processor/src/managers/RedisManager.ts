@@ -23,6 +23,7 @@ export class RedisManager {
       })
       .catch((error) => {
         console.log("Error in Redis connection: " + error);
+        process.exit(1);
       });
   }
 
