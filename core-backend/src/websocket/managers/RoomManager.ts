@@ -107,6 +107,8 @@ export class RoomManager {
           })
         );
     this.publisherClient.publish(roomId, JSON.stringify(processedMessage));
+    this.publisherClient.lPush(`queue-${roomId}`, JSON.stringify(processedMessage));
+    this.publisherClient.set(`time-${roomId}`, Date.now());
   }
 
   private redisMessageHandler(message: string, roomId: string) {

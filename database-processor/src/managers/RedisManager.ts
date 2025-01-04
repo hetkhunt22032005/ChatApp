@@ -16,13 +16,14 @@ export class RedisManager {
   }
 
   public async connectRedis(): Promise<void> {
-    try {
-      await this.client.connect();
-      console.log("Redis connected successfully.");
-    } catch (error) {
-      console.log("Error in Redis connection: ", error);
-      process.exit(1);
-    }
+    this.client
+      .connect()
+      .then(() => {
+        console.log("Redis connected successfully.");
+      })
+      .catch((error) => {
+        console.log("Error in Redis connection: " + error);
+      });
   }
 
   public async getQueues(prefix: string = "queue-"): Promise<string[]> {
@@ -32,7 +33,7 @@ export class RedisManager {
     do {
       const { cursor: nextCursor, keys } = await this.client.scan(cursor, {
         MATCH: `${prefix}*`,
-        COUNT: 100
+        COUNT: 100,
       });
       cursor = nextCursor;
       queues.push(...keys);
@@ -41,20 +42,23 @@ export class RedisManager {
     return queues;
   }
 
+  public async getTimeStamps(queues: string[]): Promise<(string | null)[]> {
+    const keys = queues.map(queue => queue.replace("queue", "time"));
+    return this.client.mGet(keys);
+  }
+
   public async getMessages(
     queue: string,
     batchSize: number = 10
   ): Promise<string[]> {
-    let messages: string[];
-    messages = await this.client.lRange(queue, -batchSize, -1);
-
-    return messages;
+    return this.client.lRange(queue, -batchSize, -1);
   }
 
-  public async clearMessages(
-    queue: string,
-    batchSize: number
-  ): Promise<void> {
-    await this.client.lTrim(queue, 0, -batchSize - 1);
+  public async clearMessages(queue: string, batchSize: number): Promise<void> {
+    this.client.lTrim(queue, 0, -batchSize - 1);
+  }
+
+  public async clearKey(key: string): Promise<number> {
+    return this.client.del(key);
   }
 }
