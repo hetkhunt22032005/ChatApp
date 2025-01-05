@@ -1,8 +1,6 @@
 "USE SCRIPT";
 import { Request, Response } from "express";
 import Conversation from "../models/conversation.model"; // .js
-import cloudinary from "../config/cloudinary"; // .js
-import Message from "../models/message.model"; // .js
 import {
   encodeRoomToken,
   encryptRoomToken,
@@ -24,7 +22,6 @@ export const newConversation = async (req: Request, res: Response) => {
     // Check for existing conversation
     const existingConversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
-      $expr: { $eq: [{ $size: "$participants" }, 2] },
     });
     if (existingConversation) {
       res.status(400).json({ message: "Conversation already exists." });
@@ -40,11 +37,15 @@ export const newConversation = async (req: Request, res: Response) => {
     const securedRoomToken = encodeRoomToken(encryptedRoomToken);
     // create the conversation
     const conversation = new Conversation({
+      roomId,
       room: securedRoomToken,
       participants: [senderId, receiverId],
     });
 
+    await conversation.save();
+
     res.status(200).json({
+      _id: conversation._id,
       message: "Conversation created successfully.",
       senderId,
       receiverId,
@@ -56,25 +57,16 @@ export const newConversation = async (req: Request, res: Response) => {
   }
 };
 
-//TODO: Shift the call to redis first and then to database
+//TODO: Shift the call to redis first and then to database | PENDING
 export const getMessages = async (req: Request, res: Response) => {
   try {
     // fetch the userId and receiverId
-    const receiverId = req.params["id"];
+    const combination = req.params["id"];
+    const [conversationId, receiverId] = combination.split(":");
     const senderId = res.locals.user._id;
-    // fetch the conversation using this two fields and populate input
-    const conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
-    })
-      .populate({
-        path: "messages",
-        options: { sort: { createdAt: -1 } },
-      })
-      .populate({
-        path: "participants",
-        match: { _id: { $ne: senderId } },
-        select: "fullname profilePic username",
-      });
+    // fetch the conversation using conversationId
+    const conversation = await Conversation.findById(conversationId);
+    // Validation of membership
     // return
     res.status(200).json(conversation);
   } catch (error: any) {
@@ -83,7 +75,7 @@ export const getMessages = async (req: Request, res: Response) => {
   }
 };
 
-//TODO: Pagination remaining
+//TODO: Pagination
 export const getContactList = async (req: Request, res: Response) => {
   try {
     // fetch the senderId
@@ -91,13 +83,14 @@ export const getContactList = async (req: Request, res: Response) => {
     // fetch all conversations in which senderId is present in participants
     const contacts = await Conversation.find({
       participants: { $in: [senderId] },
-    })
-      .select("participants updatedAt")
+    }).select("-roomId -messages")
       .sort({ updatedAt: -1 })
       .populate({
         path: "participants",
         match: { _id: { $ne: senderId } },
         select: "fullname username profilePic",
+      }).populate({
+        path: "lastMessage"
       });
     // return
     res.status(200).json(contacts);

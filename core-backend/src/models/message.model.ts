@@ -6,8 +6,8 @@ const messageSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
-    receiverId: {
-      type: Schema.Types.ObjectId,
+    roomId: {
+      type: String,
       required: true,
     },
     text: {

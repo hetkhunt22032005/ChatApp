@@ -109,4 +109,8 @@ export class WorkerManager {
       this.status = "inactive";
     }
   }
+
+  public async getPendingMessages(roomId: string) {
+    
+  }
 }
