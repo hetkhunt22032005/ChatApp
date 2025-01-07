@@ -2,11 +2,11 @@
 import WebSocket from "ws";
 import {
   ERRORMESSAGE,
-  Message,
+  UserMessage,
   SENDMESSAGE,
   SUBSCRIBE,
   UNSUBSCRIBE,
-} from "./types"; // .js
+} from "."; // .js
 import { RoomManager } from "../managers/RoomManager"; // .js
 ("END");
 
@@ -27,7 +27,7 @@ export class User {
   private addListener() {
     this.ws.on("message", (message: string) => {
       // Safe parsing the message
-      let parsedMessage: Message;
+      let parsedMessage: UserMessage;
       try {
         parsedMessage = JSON.parse(message);
       } catch (error: any) {

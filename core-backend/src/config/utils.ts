@@ -5,6 +5,7 @@ import { Response } from "express";
 import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -52,6 +53,8 @@ export const generateTokenAndSetCookie = (id: string, res: Response) => {
       sameSite: "strict", // Prevent CSRF
       secure: process.env.NODE_ENV !== "development",
     });
+
+    return token;
   } catch (error: any) {
     console.error("Error in setting cookie: ", error.message);
     throw error;
@@ -142,3 +145,23 @@ export const decodeRoomToken = (encodedRoomToken: string) => {
     return undefined;
   }
 };
+
+export class ObjectId {
+  public static convert(id: any) {
+    return new mongoose.Types.ObjectId((id as string));
+  }
+
+  public static isValid(id: any) {
+    return mongoose.Types.ObjectId.isValid((id as string));
+  }
+}
+
+export class DBProcessorAPI {
+  public static getPendingMessages(roomId: string) {
+
+  }
+
+  public static getLastMessages(roomIds: string[]) {
+    
+  }
+}

@@ -2,8 +2,9 @@
 import { createClient, RedisClientType } from "redis";
 import { AuthManager } from "./AuthManager"; // .js
 import { UserManager } from "./UserManager"; // .js
-import { ERRORMESSAGE, ImageNotification, SendMessage } from "../types/types"; // .js
+import { ERRORMESSAGE, ImageNotification, SendMessage } from "../types"; // .js
 import { MessageManager } from "./MessageManager";
+import { PrefixManager } from "./PrefixManager";
 ("END");
 
 export class RoomManager {
@@ -44,11 +45,11 @@ export class RoomManager {
     }
   }
 
-  public subscribe(room: string, id: string) {
-    const roomId = AuthManager.getInstance().validateRoom(room, id);
+  public subscribe(room: string, userId: string) {
+    const roomId = AuthManager.getInstance().validateRoom(room, userId);
     if (!roomId) {
       UserManager.getInstance()
-        .getUser(id)
+        .getUser(userId)
         ?.emit(
           JSON.stringify({
             method: ERRORMESSAGE,
@@ -57,9 +58,9 @@ export class RoomManager {
         );
       return;
     }
-    if (this.subscriptions.get(id)?.includes(roomId)) {
+    if (this.subscriptions.get(userId)?.includes(roomId)) {
       UserManager.getInstance()
-        .getUser(id)
+        .getUser(userId)
         ?.emit(
           JSON.stringify({
             method: ERRORMESSAGE,
@@ -69,12 +70,12 @@ export class RoomManager {
       return;
     }
     this.subscriptions.set(
-      id,
-      (this.subscriptions.get(id) || []).concat(roomId)
+      userId,
+      (this.subscriptions.get(userId) || []).concat(roomId)
     );
     this.reverseSubscriptions.set(
       roomId,
-      (this.reverseSubscriptions.get(roomId) || []).concat(id)
+      (this.reverseSubscriptions.get(roomId) || []).concat(userId)
     );
 
     if (this.reverseSubscriptions.get(roomId)?.length === 1) {
@@ -107,8 +108,11 @@ export class RoomManager {
           })
         );
     this.publisherClient.publish(roomId, JSON.stringify(processedMessage));
-    this.publisherClient.lPush(`queue-${roomId}`, JSON.stringify(processedMessage));
-    this.publisherClient.set(`time-${roomId}`, Date.now());
+    this.publisherClient.lPush(
+      PrefixManager.queue(roomId),
+      JSON.stringify(processedMessage)
+    );
+    this.publisherClient.set(PrefixManager.time(roomId), Date.now());
   }
 
   private redisMessageHandler(message: string, roomId: string) {

@@ -33,6 +33,7 @@ export const protectRoute = async (
     }
     // Attach user to request object
     res.locals.user = user;
+    res.locals.token = token;
     // Next
     next();
   } catch (error: any) {

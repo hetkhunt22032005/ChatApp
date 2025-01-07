@@ -39,14 +39,17 @@ export const signup = async (req: Request, res: Response) => {
       profilePic,
     });
     // Generate token and set cookie
-    generateTokenAndSetCookie(String(user._id), res);
+    const token = generateTokenAndSetCookie(String(user._id), res);
     // return
     res.status(201).json({
       message: "Account created successfully.",
-      _id: user._id,
-      fullName: user.fullname,
-      username: user.username,
-      profilePic: user.profilePic,
+      user: {
+        _id: user._id,
+        fullName: user.fullname,
+        username: user.username,
+        profilePic: user.profilePic,
+      },
+      token,
     });
   } catch (error: any) {
     if (error instanceof ZodError) {
@@ -79,14 +82,17 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
     // generate token and set cookie
-    generateTokenAndSetCookie(String(user._id), res);
+    const token = generateTokenAndSetCookie(String(user._id), res);
     // return
     res.status(200).json({
       message: "Logged in successfully.",
-      _id: user._id,
-      fullname: user.fullname,
-      username: user.username,
-      profilePic: user.profilePic,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        username: user.username,
+        profilePic: user.profilePic,
+      },
+      token,
     });
   } catch (error: any) {
     if (error instanceof ZodError) {
@@ -118,8 +124,9 @@ export const me = (req: Request, res: Response) => {
   try {
     // fetch the user from res
     const user = res.locals.user;
+    const token = res.locals.token;
     // return
-    res.status(200).json(user);
+    res.status(200).json({token, user});
   } catch (error: any) {
     console.log("Error in me controller: ", error.message);
   }

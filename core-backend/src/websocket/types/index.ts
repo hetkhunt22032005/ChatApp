@@ -29,11 +29,6 @@ export type SendMessage = {
   createdAt: Date;
 };
 
-export type ErrorMessage = {
-  method: string;
-  message: string;
-};
-
 export type ImageNotification = {
   method: typeof IMAGENOTIFICATION;
   room: string;
@@ -42,4 +37,4 @@ export type ImageNotification = {
   image_url: string;
 };
 
-export type Message = SubscribeMessage | UnsubscribeMessage | SendMessage;
+export type UserMessage = SubscribeMessage | UnsubscribeMessage | SendMessage;

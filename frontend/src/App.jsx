@@ -1,28 +1,35 @@
 import { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { auth } from "./config/firebase";
 import { Chat, Login, ProfileUpdate } from "./pages";
+import useMe from "./hooks/useMe";
+import { useAuthStore } from "./store";
 const App = () => {
-  const navigate = useNavigate();
+  const { loading, checkAuth } = useMe();
+  const { user } = useAuthStore();
+
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        navigate("/chat");
-      } else {
-        navigate("/");
-      }
-    });
-  }, [navigate]);
+    checkAuth();
+  }, [checkAuth]);
+
+  if (loading && !user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/Chat" element={<Chat />} />
-        <Route path="/profile" element={<ProfileUpdate />} />
+        <Route
+          path="/"
+          element={user ? <Navigate to={"/chat"} /> : <Login />}
+        />
+        <Route path="/Chat" element={user ? <Chat /> : <Navigate to={"/"} />} />
+        <Route
+          path="/profile"
+          element={user ? <ProfileUpdate /> : <Navigate to={"/"} />}
+        />
       </Routes>
     </>
   );
