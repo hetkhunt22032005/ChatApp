@@ -37,7 +37,7 @@ export class WorkerManager {
     }
   }
 
-  private async spawnWorkers() {
+  private async spawnWorkers(): Promise<void> {
     const idleWorkers = this.getIdleWorkers();
     if (idleWorkers) {
       for (let i = 0; i < idleWorkers; i++) {
@@ -46,17 +46,17 @@ export class WorkerManager {
     }
   }
 
-  private async createWorker() {
+  private async createWorker(): Promise<void> {
     const workerId = this.getRandomId();
     const queue = this.getTask(workerId);
     if (!queue) return;
 
     const extension = process.env.NODE_ENV === "development" ? ".ts" : ".js";
     const worker = new Worker(
-      resolve(__dirname, `../types/Worker.${extension}`)
+      resolve(__dirname, `../types/Worker${extension}`)
     );
     const messages = await RedisManager.getInstance().getMessages(queue);
-    worker.postMessage({ method: PROCESS, messages });
+    worker.postMessage({ method: PROCESS, messages, queue });
 
     worker.on("message", async (message: WorkerMessgae) => {
       switch (message.method) {
@@ -84,9 +84,14 @@ export class WorkerManager {
       console.log("Error occurred in worker: " + workerId + ": ", err.message);
       this.handleStatus(workerId);
     });
+
+    worker.once("exit", (exitCode) => {
+      console.log(`Worker ${workerId} exited with code: ${exitCode}`);
+      this.handleStatus(workerId);
+    });
   }
 
-  private getTask(workerId: string) {
+  private getTask(workerId: string): string | undefined {
     const taskId = this.pendingTasks.shift();
     if (!taskId) {
       return undefined;
@@ -95,22 +100,20 @@ export class WorkerManager {
     return taskId;
   }
 
-  private getRandomId() {
+  private getRandomId(): string {
     return Math.random().toString(36).substring(2, 6);
   }
 
-  private getIdleWorkers() {
+  private getIdleWorkers(): number {
     return this.MAX_WORKERS - Math.min(this.MAX_WORKERS, this.activeTasks.size);
   }
 
-  private handleStatus(workerId: string) {
+  private handleStatus(workerId: string): void {
     this.activeTasks.delete(workerId);
     if (this.activeTasks.size === 0) {
       this.status = "inactive";
     }
   }
 
-  public async getPendingMessages(roomId: string) {
-    
-  }
+  public async getPendingMessages(roomId: string) {}
 }

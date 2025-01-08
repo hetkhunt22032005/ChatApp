@@ -19,8 +19,9 @@ export type UnsubscribeMessage = {
 
 export type SendMessage = {
   method: typeof SENDMESSAGE | typeof PROCESSEDMESSAGE;
-  room: string;
   senderId: string;
+  room: string;
+  conversationId: string;
   tempId: string;
   content: {
     text?: string;

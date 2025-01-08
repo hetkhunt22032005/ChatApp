@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ESNext" ,
-    "module": "ESNext" ,
-    "rootDir": "./src" ,
-    "outDir": "./dist" ,
-    "esModuleInterop": true ,
+    "target": "ESNext",
+    "module": "ESNext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true ,
-    "strict": true ,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noEmitOnError": true,
     "skipLibCheck": true
-  },
+  }
 }

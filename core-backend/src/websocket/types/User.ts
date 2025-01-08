@@ -6,7 +6,7 @@ import {
   SENDMESSAGE,
   SUBSCRIBE,
   UNSUBSCRIBE,
-} from "."; // .js
+} from "./index"; // .js
 import { RoomManager } from "../managers/RoomManager"; // .js
 ("END");
 
@@ -32,15 +32,19 @@ export class User {
         parsedMessage = JSON.parse(message);
       } catch (error: any) {
         console.log("Error in parsing incoming message: ", error.message);
-        this.emit(JSON.stringify({
-          method: ERRORMESSAGE,
-          message: "Invalid format of message",
-        }));
+        this.emit(
+          JSON.stringify({
+            method: ERRORMESSAGE,
+            message: "Invalid format of message",
+          })
+        );
         return;
       }
       // Check for the same user.
       if (parsedMessage.senderId !== this.userId) {
-        this.emit(JSON.stringify({ method: ERRORMESSAGE, message: "Malicious user" }));
+        this.emit(
+          JSON.stringify({ method: ERRORMESSAGE, message: "Malicious user" })
+        );
         return;
       }
       console.log(parsedMessage);
@@ -52,12 +56,18 @@ export class User {
           );
           break;
         case SENDMESSAGE:
-          RoomManager.getInstance().publish(parsedMessage.room, parsedMessage.senderId, parsedMessage);
+          RoomManager.getInstance().publish(
+            parsedMessage.room,
+            parsedMessage.senderId,
+            parsedMessage
+          );
           break;
         case UNSUBSCRIBE:
           break;
         default:
-          this.emit(JSON.stringify({ method: ERRORMESSAGE, message: "Invalid method" }));
+          this.emit(
+            JSON.stringify({ method: ERRORMESSAGE, message: "Invalid method" })
+          );
           break;
       }
     });

@@ -10,6 +10,15 @@ const messageSchema = new Schema(
       type: String,
       required: true,
     },
+    conversationId: {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
+    tempId: {
+      type: String,
+      required: true,
+    },
     text: {
       type: String,
     },
@@ -19,6 +28,8 @@ const messageSchema = new Schema(
   },
   { timestamps: true }
 );
+
+messageSchema.index({ tempId: -1, createdAt: -1 });
 
 const Message = model("Message", messageSchema);
 

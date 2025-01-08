@@ -6,8 +6,17 @@ const messageSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
-    receiverId: {
+    roomId: {
+      type: String,
+      required: true,
+    },
+    conversationId: {
       type: Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
+    tempId: {
+      type: String,
       required: true,
     },
     text: {
@@ -19,6 +28,8 @@ const messageSchema = new Schema(
   },
   { timestamps: true }
 );
+
+messageSchema.index({ tempId: -1, createdAt: -1 });
 
 const Message = model("Message", messageSchema);
 

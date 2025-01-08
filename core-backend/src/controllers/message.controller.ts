@@ -8,6 +8,7 @@ import {
   generateRoomToken,
   ObjectId,
 } from "../config/utils"; // .js
+import Message from "../models/message.model"; // .js
 ("END");
 
 export const newConversation = async (req: Request, res: Response) => {
@@ -58,26 +59,34 @@ export const newConversation = async (req: Request, res: Response) => {
   }
 };
 
-//TODO: Pagination using the array length
+//TODO: Pagination using the timestamp
 export const getMessages = async (req: Request, res: Response) => {
   try {
-    // fetch the userId and receiverId
+    // fetch the userId and userId
     const conversation = req.params["id"];
-    const conversationId = ObjectId.convert(conversation);
-    const senderId = ObjectId.convert(res.locals.user._id);
+    const conversationId = ObjectId.isValid(conversation)
+      ? ObjectId.convert(conversation)
+      : undefined;
+    if (!conversationId) {
+      res.status(400).json({ message: "Invalid conversation ID." });
+      return;
+    }
+    const userId = ObjectId.convert(res.locals.user._id);
     // fetch the conversation using conversationId
     const conversationDoc = await Conversation.findById(conversationId);
     // Validation of membership
-    if (!conversationDoc || !conversationDoc.participants.includes(senderId)) {
+    if (!conversationDoc || !conversationDoc.participants.includes(userId)) {
       res.status(403).json({
         message: "Forbidden. You are not a member of this conversation.",
       });
       return;
     }
-    // Populate the messages
-
+    // Query the messages
+    const messages = await Message.find({
+      conversationId: conversationId,
+    }).sort({ createdAt: -1 });
     // return
-    res.status(200).json(conversation);
+    res.status(200).json({ messages });
   } catch (error: any) {
     console.error("Error in getMessages controller: ", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -88,24 +97,28 @@ export const getMessages = async (req: Request, res: Response) => {
 export const getContactList = async (req: Request, res: Response) => {
   try {
     // Fetch the senderId
-    const senderId = ObjectId.convert(res.locals.user._id);
-    // Fetch all conversations in which senderId is present in participants
+    const userId = ObjectId.convert(res.locals.user._id);
+    // Fetch all conversations in which userId is present in participants
     const contacts = await Conversation.find({
-      participants: { $in: [senderId] },
+      participants: { $in: [userId] },
     })
-      .select("-messages -roomId")
+      .select("-roomId")
       .sort({ updatedAt: -1 })
       .populate({
         path: "participants",
-        match: { _id: { $ne: senderId } },
+        match: { _id: { $ne: userId } },
         select: "fullname username profilePic",
       })
       .populate({
         path: "latestMessage",
       });
-
+    // Filtering to show empty conversation only to the creator as their contact and not to show the other member
+    // This is similar to just people in contact but with whom they not yet chatted
+    contacts.filter(
+      (contact) => contact.creator.equals(userId) || contact.lastMessage
+    );
     // return
-    res.status(200).json(contacts);
+    res.status(200).json({ contacts });
   } catch (error: any) {
     console.log("Error in getContactList controller: ", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -126,7 +139,7 @@ export const getConversation = async (req: Request, res: Response) => {
     }
     // Fetch the conversation using conversationId
     const conversation = await Conversation.findById(conversationId)
-      .select("-messages -lastMessage -roomId")
+      .select("-roomId")
       .populate({
         path: "participants",
         select: "fullname username profilePic",
@@ -148,7 +161,7 @@ export const getConversation = async (req: Request, res: Response) => {
       (participant) => !participant._id.equals(userId)
     );
     // return
-    res.status(200).json(conversation);
+    res.status(200).json({ conversation });
   } catch (error: any) {
     console.log("Error in getConversation controller: ", error.message);
     res.status(500).json({ message: "Internal Server Error" });

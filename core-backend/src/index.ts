@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { log } from "console";
 import cors from "cors";
 import connectDB from "./config/db"; // .js
-import { V1Router } from "./routes/index.route"; // .js
+import V1Router from "./routes/index.route"; // .js
 import { app, httpServer } from "./websocket/socket"; // .js
 import { RoomManager } from "./websocket/managers/RoomManager"; // .js
 ("END");

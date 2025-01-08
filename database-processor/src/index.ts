@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { QueueManager, RedisManager, WorkerManager } from "./managers";
+import { connectDB } from "./config/db";
 
 dotenv.config();
 
@@ -15,5 +16,6 @@ app.get("/pending-messages/:roomId", async (req, res) => {
 
 app.listen(PORT, async () => {
   await RedisManager.getInstance().connectRedis();
+  await connectDB();
   QueueManager.getInstance().start();
 });

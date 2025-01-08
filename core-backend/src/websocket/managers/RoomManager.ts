@@ -2,9 +2,9 @@
 import { createClient, RedisClientType } from "redis";
 import { AuthManager } from "./AuthManager"; // .js
 import { UserManager } from "./UserManager"; // .js
-import { ERRORMESSAGE, ImageNotification, SendMessage } from "../types"; // .js
-import { MessageManager } from "./MessageManager";
-import { PrefixManager } from "./PrefixManager";
+import { ERRORMESSAGE, ImageNotification, SendMessage } from "../types/index"; // .js
+import { MessageManager } from "./MessageManager"; // .js
+import { PrefixManager } from "./PrefixManager"; // .js
 ("END");
 
 export class RoomManager {

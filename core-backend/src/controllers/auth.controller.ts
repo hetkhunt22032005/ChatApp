@@ -126,7 +126,7 @@ export const me = (req: Request, res: Response) => {
     const user = res.locals.user;
     const token = res.locals.token;
     // return
-    res.status(200).json({token, user});
+    res.status(200).json({ token, user });
   } catch (error: any) {
     console.log("Error in me controller: ", error.message);
   }

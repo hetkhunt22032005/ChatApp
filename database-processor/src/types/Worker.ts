@@ -1,19 +1,86 @@
 import { parentPort } from "worker_threads";
 import { connectDB, closeDB } from "../config/db";
-import { ParentMessages, PROCESS, PROCESSED, TERMINATE, TERMINATED } from ".";
+import {
+  CHATMESSAGE,
+  IMAGENOTIFICATION,
+  UserMessage,
+  ParentMessages,
+  PROCESS,
+  PROCESSED,
+  TERMINATE,
+  TERMINATED,
+} from ".";
+import Message from "../models/message.model";
+import Conversation from "../models/conversation.model";
 
 let DBStatus = "disconnected";
 
-async function processMessage(message: string[], queue: string) {
+async function processMessage(messages: string[], queue: string) {
+  // Ensuring database connection
   if (DBStatus === "disconnected") {
     await connectDB();
     DBStatus = "connected";
   }
-  // Do the actual message storing
-  parentPort?.postMessage({method: PROCESSED, batchSize: message.length, queue: queue});
+  // Fetching roomId from queue
+  const roomId = queue.split("queue-")[1];
+  // Parsing the messages
+  const parsedMessages = messages.map(
+    (message) => JSON.parse(message) as UserMessage
+  );
+  // Filtering chat and image notifications
+  const chatMessages = [];
+  const imageNotifications = [];
+
+  for (const message of parsedMessages) {
+    if (message.method === CHATMESSAGE) {
+      chatMessages.push(message);
+    } else if (message.method === IMAGENOTIFICATION) {
+      imageNotifications.push(message);
+    }
+  }
+
+  if (chatMessages.length > 0) {
+    // Storing the chats and updating the messages array
+    const messageDocuments = chatMessages.map((chatMessage) => {
+      return {
+        senderId: chatMessage.senderId,
+        roomId: roomId,
+        conversationId: chatMessage.conversationId,
+        tempId: chatMessage.tempId,
+        text: chatMessage.content.text,
+        image: chatMessage.content.image,
+        createdAt: chatMessage.createdAt,
+      };
+    });
+    // Fetching the conversationId
+    const conversationId = messageDocuments[0].conversationId;
+    // Inserting the messages in bulk
+    const insertResponse = await Message.insertMany(messageDocuments);
+    // Updating the last message in the conversation
+    await Conversation.findByIdAndUpdate(conversationId, {
+      lastMessage: insertResponse[0]._id,
+    });
+  }
+  if (imageNotifications.length > 0) {
+    // Updating the image url in chat
+    for (let imageNotification of imageNotifications) {
+      await Message.updateOne(
+        { tempId: imageNotification.tempId },
+        { image: imageNotification.image_url }
+      );
+    }
+  }
+
+  // return
+  parentPort?.postMessage({
+    method: PROCESSED,
+    batchSize: messages.length,
+    queue: queue,
+  });
 }
 
 async function terminate() {
+  // Close the connection
   if (DBStatus === "connected") {
     await closeDB();
     DBStatus = "disconnected";
@@ -22,11 +89,13 @@ async function terminate() {
 }
 
 parentPort?.on("message", async (message: ParentMessages) => {
+  // Handling different cases
   switch (message.method) {
     case PROCESS:
       processMessage(message.messages, message.queue);
       break;
     case TERMINATE:
       terminate();
+      break;
   }
 });

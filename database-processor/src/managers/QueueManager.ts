@@ -28,10 +28,13 @@ export class QueueManager {
     return this.instance;
   }
 
-  private async selectQueues() {
+  private async selectQueues(): Promise<void> {
     const finalQueues: { queue: string; priority: number }[] = [];
     const queues = await RedisManager.getInstance().getQueues();
+    console.log(queues);
+    if (queues.length === 0) return;
     const timestamps = await RedisManager.getInstance().getTimeStamps(queues);
+    console.log(timestamps);
     const currentTime = Date.now();
     queues.forEach((queue, index) => {
       const timeDifference = timestamps[index]
@@ -63,7 +66,7 @@ export class QueueManager {
     });
   }
 
-  private calculatePriority(timeDifference: number, ignoreCount: number) {
+  private calculatePriority(timeDifference: number, ignoreCount: number): number {
     const timeWeight = Math.min(timeDifference / 1000, this.MAX_TIME_FACTOR); // seconds
     const ignoreBoost =
       ignoreCount > this.IGNORE_THRESHOLD ? this.IGNORE_BOOST : 0;

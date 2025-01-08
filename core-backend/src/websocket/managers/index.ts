@@ -1,4 +1,4 @@
-export { AuthManager } from "./AuthManager";
-export { MessageManager } from "./MessageManager";
-export { RoomManager } from "./RoomManager";
-export { UserManager } from "./UserManager";
+"USE SCRIPT";
+export { RoomManager } from "./RoomManager"; // .js
+export { UserManager } from "./UserManager"; // .js
+("END");

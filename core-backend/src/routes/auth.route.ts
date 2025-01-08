@@ -1,11 +1,6 @@
 "USE SCRIPT";
 import { Router } from "express";
-import {
-  login,
-  logout,
-  signup,
-  me,
-} from "../controllers/auth.controller"; // .js
+import { login, logout, signup, me } from "../controllers/auth.controller"; // .js
 import { protectRoute } from "../middlewares/auth.middleware"; // .js
 ("END");
 const authRouter = Router();
