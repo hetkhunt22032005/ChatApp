@@ -44,7 +44,7 @@ export class RedisManager {
   }
 
   public async getTimeStamps(queues: string[]): Promise<(string | null)[]> {
-    const keys = queues.map(queue => queue.replace("queue", "time"));
+    const keys = queues.map((queue) => queue.replace("queue", "time"));
     return this.client.mGet(keys);
   }
 

@@ -1,14 +1,17 @@
+"USE SCRIPT";
 import express from "express";
-import authenticateWebhook from "./middlewares/auth.middleware";
-import { WebHookManager } from "./managers/WebHookManager";
-import { PubSubManager } from "./managers/PubSubManager";
+import authenticateWebhook from "./middlewares/auth.middleware"; // .js
+import WebHookManager from "./managers/WebHookManager"; // .js
+import { PubSubManager } from "./managers/PubSubManager"; // .js
 import dotenv from "dotenv";
+("END");
+// Load environment variables
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
 
 // Create the express server
 const app = express();
-
-// Load environment variables
-dotenv.config();
 
 // Body parser
 app.use(express.json());
@@ -22,11 +25,11 @@ app.post(
 
 // Home route
 app.get("/", (req, res) => {
-  res.status(200).json({message: "ChatApp - Upload Notifier"});
+  res.status(200).json({ message: "ChatApp - Upload Notifier" });
 });
 
 // Start the server
-app.listen(3000, async () => {
+app.listen(PORT, async () => {
   await PubSubManager.getInstance().connectRedis();
-  console.log("Server is running on port 3000.");
+  console.log(`Server is running on port ${PORT}.`);
 });

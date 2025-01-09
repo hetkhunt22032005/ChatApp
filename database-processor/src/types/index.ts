@@ -25,21 +25,23 @@ export type ParentMessages =
       method: typeof TERMINATE;
     };
 
-export type UserMessage = {
-  method: typeof CHATMESSAGE,
-  senderId: string,
-  room: string,
-  conversationId: string,
-  tempId: string,
-  content: {
-    text?: string;
-    image?: false | "pending";
-  },
-  createdAt: Date
-} | {
-  method: typeof IMAGENOTIFICATION,
-  room: string,
-  senderId: string,
-  tempId: string,
-  image_url: string,
-}
+export type UserMessage =
+  | {
+      method: typeof CHATMESSAGE;
+      senderId: string;
+      room: string;
+      conversationId: string;
+      tempId: string;
+      content: {
+        text?: string;
+        image?: false | "pending";
+      };
+      createdAt: Date;
+    }
+  | {
+      method: typeof IMAGENOTIFICATION;
+      room: string;
+      senderId: string;
+      tempId: string;
+      image_url: string;
+    };

@@ -7,7 +7,7 @@ const authenticateWebhook = (
 ) => {
   try {
     // Fetch the webhook secret
-    const whsecret = req.params['whsecret'];
+    const whsecret = req.params["whsecret"];
     // Validate the webhook secret
     if (process.env.WH_SECRET !== whsecret) {
       res.status(400).json({ messsage: "Unauthorized" });
@@ -17,7 +17,7 @@ const authenticateWebhook = (
     next();
   } catch (error: any) {
     console.log("Error in authenticateWebhook middleware: " + error.message);
-    res.status(500).json({ message: "Internal server error." });
+    res.status(500).json({ message: "Internal server error" });
     return;
   }
 };

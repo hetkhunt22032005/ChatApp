@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 import { Bindings, Variables } from "@generics/hono.generic";
-import {
-  authenticateClient
-} from "@middlewares/auth.middleware";
-import { MetaData } from "./schema/data.schema";
+import authenticateClient from "@middlewares/auth.middleware";
+import MetaData from "./schema/data.schema";
 import { v2 as cloudinary } from "cloudinary";
 
 const app = new Hono<{
@@ -24,8 +22,8 @@ app.post("/generate-signed-url", authenticateClient, async (c) => {
     if (!tempId || !room) {
       return c.json({ message: "Invalid metadata provided." }, 400);
     }
-    // Create the timestamp (Valid for 2 minutes)
-    const timestamp = Math.floor(Date.now() / 1000) - 58 * 60;
+    // Create the timestamp (Valid for 1 minute)
+    const timestamp = Math.floor(Date.now() / 1000) - 59 * 60;
     // Metadata
     const context = `tempId=${tempId}|room=${room}`;
     // Sign the url

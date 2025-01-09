@@ -7,7 +7,7 @@ import {
   JwtTokenSignatureMismatched,
 } from "hono/utils/jwt/types";
 
-export const authenticateClient = createMiddleware(async (c, next) => {
+const authenticateClient = createMiddleware(async (c, next) => {
   try {
     // Fetch the token
     const token = c.req.header("Authorization");
@@ -36,3 +36,5 @@ export const authenticateClient = createMiddleware(async (c, next) => {
     }
   }
 });
+
+export default authenticateClient;

@@ -1,14 +1,15 @@
+"USE SCRIPT";
 import { resolve } from "path";
 import { Worker } from "worker_threads";
-import { RedisManager } from "./RedisManager";
+import { RedisManager } from "./RedisManager"; // .js
 import {
   PROCESS,
   PROCESSED,
   TERMINATE,
   TERMINATED,
   WorkerMessgae,
-} from "../types";
-
+} from "../types/index"; // .js
+("END");
 export class WorkerManager {
   private static instance: WorkerManager;
   private pendingTasks: string[];

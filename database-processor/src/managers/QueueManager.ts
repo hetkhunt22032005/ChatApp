@@ -1,6 +1,7 @@
-import { RedisManager } from "./RedisManager";
-import { WorkerManager } from "./WorkerManager";
-
+"USE SCRIPT";
+import { RedisManager } from "./RedisManager"; // .js
+import { WorkerManager } from "./WorkerManager"; // .js
+("END");
 export class QueueManager {
   private static instance: QueueManager;
   private ignoreCounts: Map<string, number>;
@@ -66,7 +67,10 @@ export class QueueManager {
     });
   }
 
-  private calculatePriority(timeDifference: number, ignoreCount: number): number {
+  private calculatePriority(
+    timeDifference: number,
+    ignoreCount: number
+  ): number {
     const timeWeight = Math.min(timeDifference / 1000, this.MAX_TIME_FACTOR); // seconds
     const ignoreBoost =
       ignoreCount > this.IGNORE_THRESHOLD ? this.IGNORE_BOOST : 0;

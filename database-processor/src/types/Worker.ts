@@ -1,5 +1,6 @@
+"USE SCRIPT";
 import { parentPort } from "worker_threads";
-import { connectDB, closeDB } from "../config/db";
+import { connectDB, closeDB } from "../config/db"; // .js
 import {
   CHATMESSAGE,
   IMAGENOTIFICATION,
@@ -9,10 +10,10 @@ import {
   PROCESSED,
   TERMINATE,
   TERMINATED,
-} from ".";
-import Message from "../models/message.model";
-import Conversation from "../models/conversation.model";
-
+} from "./index"; // .js
+import Message from "../models/message.model"; // .js
+import Conversation from "../models/conversation.model"; // .js
+("END");
 let DBStatus = "disconnected";
 
 async function processMessage(messages: string[], queue: string) {
@@ -40,7 +41,8 @@ async function processMessage(messages: string[], queue: string) {
   }
 
   if (chatMessages.length > 0) {
-    // Storing the chats and updating the messages array
+    // Storing the chats and updating the last message in conversation
+
     const messageDocuments = chatMessages.map((chatMessage) => {
       return {
         senderId: chatMessage.senderId,
