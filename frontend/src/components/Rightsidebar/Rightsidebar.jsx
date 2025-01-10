@@ -1,8 +1,8 @@
 import assets from "../../assets/assets";
-import { logout } from "../../config/firebase";
 import "./Rightsidebar.css";
-
+import useLogout from "../../hooks/useLogout";
 export const Rightsidebar = () => {
+  const { logout } = useLogout();
   return (
     <div className="rs">
       <div className="rs-profile">

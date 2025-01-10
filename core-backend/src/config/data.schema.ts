@@ -11,7 +11,8 @@ export const SignUpSchemaL1 = z.object({
   password: z
     .string()
     .trim()
-    .min(8, { message: "Passworrd must be atleast 8 characters long." }),
+    .min(8, { message: "Passworrd must be atleast 8 characters long." })
+    .max(20, {message: "Password cannot be more than 20 characters long."}),
 
   username: z
     .string()
