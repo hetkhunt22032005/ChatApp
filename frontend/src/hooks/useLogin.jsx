@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../store";
 import { axiosError, axiosInstance } from "../config";
+import { toast } from "react-toastify";
 
 const useLogin = () => {
   const { setUser } = useAuthStore();
@@ -14,12 +15,10 @@ const useLogin = () => {
         password,
       });
       setUser(response.data.user, response.data.token);
-      // Show the login message using toast
-      // Path => response.data.message
+      toast.success(response.data.message);
     } catch (error) {
       if (axiosError(error)) {
-        // Show the error message using toast
-        // Path => error.response.data.message
+        toast.error(error.response.data.message);
       }
     } finally {
       setLoading(false);

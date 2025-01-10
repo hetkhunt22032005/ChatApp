@@ -33,7 +33,7 @@ const assets = {
     add_icon,
     menu_icon,
     arrow_icon,
-    green_dot
+    green_dot,
 }
 
 export default assets;

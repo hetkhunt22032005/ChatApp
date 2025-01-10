@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,9 +9,9 @@ const App = () => {
   const { loading, checkAuth } = useMe();
   const { user } = useAuthStore();
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  // useEffect(() => {
+  //   checkAuth();
+  // }, [checkAuth]);
 
   if (loading && !user) {
     return <div>Loading...</div>;
@@ -23,12 +23,12 @@ const App = () => {
       <Routes>
         <Route
           path="/"
-          element={user ? <Navigate to={"/chat"} /> : <Login />}
+          element={<Login />}
         />
-        <Route path="/Chat" element={user ? <Chat /> : <Navigate to={"/"} />} />
+        <Route path="/Chat" element={<Chat />} />
         <Route
           path="/profile"
-          element={user ? <ProfileUpdate /> : <Navigate to={"/"} />}
+          element={<ProfileUpdate />}
         />
       </Routes>
     </>
