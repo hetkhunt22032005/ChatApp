@@ -11,7 +11,7 @@
 }
 .login-form {
   background-color: white;
-  padding: 20px 30px;
+  padding: 20px 50px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -21,13 +21,9 @@
   font-weight: 500;
 }
 .form-input {
-  /* flex: 1; */
   width: 100%;
-  padding-right: 40px;
-  padding: 8px 10px;
+  padding: 10px 40px;
   border: none;
-  /* border: 1px solid #c9c9c9;
-  border-radius: 4px; */
   outline-color: #077eff;
 }
 .login-form button {
@@ -62,18 +58,22 @@
 }
 
 .form-input-container {
+  position: relative;
+  align-items: center;
+  width: 100%;
   display: flex;
   align-items: center;
-  /* background-color: #f9f9f9; */
   border: 1px solid #c9c9c9;
   border-radius: 4px;
-  padding: 8px 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   gap: 10px;
 }
 
 .form-input-icon {
-  font-size: 1.2rem;
+  position: absolute;
+  font-size: 1rem;
+  padding: 1rem;
+  padding-top: 20px;
   color: #888;
 }
 
@@ -115,7 +115,6 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  /* background-color: white; */
 }
 
 .spinner {
