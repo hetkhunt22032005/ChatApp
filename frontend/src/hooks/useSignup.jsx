@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { useAuthStore } from "../store";
 import { axiosError, axiosInstance } from "../config";
 import { toast } from "react-toastify";
@@ -6,6 +7,7 @@ import { toast } from "react-toastify";
 const useSignup = () => {
   const { setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const signup = async ({ fullname, username, password, gender }) => {
     setLoading(true);
@@ -22,6 +24,7 @@ const useSignup = () => {
       });
       setUser(response.data.user, response.data.token);
       toast.success(response.data.message);
+      navigate("/chat");
     } catch (error) {
       if (axiosError(error)) {
         toast.error(error.response.data.message);

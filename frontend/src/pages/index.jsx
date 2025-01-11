@@ -1,3 +1,3 @@
 export { Chat } from "./Chat/Chat";
-export { Login } from "./Login/Login";
+export { Auth } from "./Auth/Auth";
 export { ProfileUpdate } from "./ProfileUpdate/ProfileUpdate";

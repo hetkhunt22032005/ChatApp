@@ -1,5 +1,5 @@
 import { useState } from "react";
-import assets from "../../assets/assets";
+import assets from "../../assets";
 import "./ProfileUpdate.css";
 export const ProfileUpdate = () => {
   const [image, setImage] = useState(false);

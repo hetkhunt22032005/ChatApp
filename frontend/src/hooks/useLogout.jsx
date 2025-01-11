@@ -12,7 +12,6 @@ const useLogout = () => {
       const response = await axiosInstance.post("/auth/logout");
       setUser(null, null);
       toast.success(response.data.message);
-      console.log(response.data);
     } catch (error) {
       if (axiosError(error)) {
         toast.error(error.response.data.message);

@@ -1,4 +1,4 @@
-import assets from "../../assets/assets";
+import assets from "../../assets";
 import "./Rightsidebar.css";
 import useLogout from "../../hooks/useLogout";
 export const Rightsidebar = () => {
@@ -31,5 +31,3 @@ export const Rightsidebar = () => {
     </div>
   );
 };
-
-export default Rightsidebar;

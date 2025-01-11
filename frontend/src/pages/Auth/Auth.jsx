@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import assets from "../../assets/assets";
+import { useState } from "react";
+import assets from "../../assets";
 import useLogin from "../../hooks/useLogin";
 import useSignup from "../../hooks/useSignup";
-import "./Login.css";
+import "./Auth.css";
 import { Spinner } from "../../components";
 
-export const Login = () => {
-  const [currState, setCurrState] = useState("Sign up");
+export const Auth = () => {
+  const [currState, setCurrState] = useState("Login");
   const [isPassVisible, setPassVisible] = useState(false);
   const { login, loading: isLoggingIn } = useLogin();
   const { signup, loading: isSigningUp } = useSignup();
   const [formProps, setFormProps] = useState(
-    currState === "Sign up"
+    currState === "Sign Up"
       ? { fullname: "", username: "", password: "", gender: "" }
       : { username: "", password: "" }
   );
 
   const toggleState = () => {
-    setCurrState((prev) => (prev === "Sign up" ? "Login" : "Sign up"));
+    setCurrState((prev) => (prev === "Sign Up" ? "Login" : "Sign Up"));
   };
 
   const togglePassVisibility = () => {
@@ -27,12 +27,10 @@ export const Login = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
-    if (currState === "Sign up") {
+    if (currState === "Sign Up") {
       signup(formProps);
-      console.log("Signing up:", { fullname, username, password, gender });
     } else {
       login(formProps);
-      console.log("Logging in:", { username, password });
     }
   };
 
@@ -46,7 +44,7 @@ export const Login = () => {
 
       <form onSubmit={onSubmitHandler} className="login-form">
         <h2>{currState}</h2>
-        {currState === "Sign up" && (
+        {currState === "Sign Up" ? (
           <div className="form-input-container">
             <i className="fi fi-rr-user form-input-icon"></i>
             <input
@@ -60,7 +58,7 @@ export const Login = () => {
               required
             />
           </div>
-        )}
+        ) : null}
         <div className="form-input-container">
           <i className="fi fi-rr-id-card-clip-alt form-input-icon"></i>
           <input
@@ -95,7 +93,7 @@ export const Login = () => {
             ></i>
           </div>
         </div>
-        {currState === "Sign up" && (
+        {currState === "Sign Up" ? (
           <div className="gender-selection">
             <label className="gender-option">
               <input
@@ -124,17 +122,19 @@ export const Login = () => {
               Female
             </label>
           </div>
-        )}
+        ) : null}
         <button type="submit">
-          {currState === "Sign up" ? "Create Account" : "Login Now"}
+          {currState === "Sign Up" ? "Create Account" : "Login Now"}
         </button>
-        <div className="login-term">
-          <input type="checkbox" required />
-          <p>Agree to the terms of use & privacy policy.</p>
-        </div>
+        {currState === "Sign Up" ? (
+          <div className="login-term">
+            <input type="checkbox" required />
+            <p>Agree to the terms of use & privacy policy.</p>
+          </div>
+        ) : null}
         <div className="login-forgot">
           <p className="login-toggle">
-            {currState === "Sign up"
+            {currState === "Sign Up"
               ? "Already have an account?"
               : "Create an account?"}
             <span onClick={toggleState}> Click here.</span>
