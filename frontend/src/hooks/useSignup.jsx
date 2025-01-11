@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../store";
 import { axiosError, axiosInstance } from "../config";
+import { toast } from "react-toastify";
 
 const useSignup = () => {
   const { setUser } = useAuthStore();
@@ -20,12 +21,10 @@ const useSignup = () => {
         gender,
       });
       setUser(response.data.user, response.data.token);
-      // Show the signup message
-      // Path => response.data.message
+      toast.success(response.data.message);
     } catch (error) {
       if (axiosError(error)) {
-        // Show the error message
-        // Path => error.response.data.message
+        toast.error(error.response.data.message);
       }
     } finally {
       setLoading(false);
@@ -50,11 +49,11 @@ function validateProps(fullname, username, password, gender) {
 function validFullName(fullname) {
   const parserFullName = String(fullname);
   if (parserFullName.length < 6) {
-    // Message:- Full name must be atleast 6 characters long
+    toast.error("Full name must be atleast 6 characters long");
     return false;
   }
   if (parserFullName.length > 255) {
-    // Message:- Full name cannot be more than 255 characters
+    toast.error("Full name cannot be more than 255 characters");
     return false;
   }
   return true;
@@ -64,15 +63,15 @@ function validUsername(username) {
   const parsedUsername = String(username);
   const regex = /^[a-zA-Z0-9_]+$/;
   if (parsedUsername.length < 3) {
-    // Message:- Username must be at least 3 characters long
+    toast.error("Username must be at least 3 characters long");
     return false;
   }
   if (parsedUsername.length > 50) {
-    // Message:- Username cannot be more than 50 characters
+    toast.error("Username cannot be more than 50 characters");
     return false;
   }
   if (!regex.test(parsedUsername)) {
-    // Message:- Username can only contain letters, numbers, and underscores
+    toast.error("Username can only contain letters, numbers, and underscores");
     return false;
   }
   return true;
@@ -84,23 +83,23 @@ function validPassword(password) {
   const regex2 = /[a-z]/;
   const regex3 = /[0-9]/;
   if (parsedPassword.length < 8) {
-    // Message:- Passworrd must be atleast 8 characters long
+    toast.error("Passworrd must be atleast 8 characters long");
     return false;
   }
   if (parsedPassword.length > 20) {
-    // Message:- Password cannot be more than 20 characters long
+    toast.error("Password cannot be more than 20 characters long");
     return false;
   }
   if (!regex1.test(parsedPassword)) {
-    // Message:- Password must contain at least one uppercase letter
+    toast.error("Password must contain at least one uppercase letter");
     return false;
   }
   if (!regex2.test(parsedPassword)) {
-    // Message:- Password must contain at least one lowercase letter
+    toast.error("Password must contain at least one lowercase letter");
     return false;
   }
   if (!regex3.test(parsedPassword)) {
-    // Message:- Password must contain at least one digit
+    toast.error("Password must contain at least one digit");
     return false;
   }
   return true;

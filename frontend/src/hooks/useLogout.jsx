@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { axiosError, axiosInstance } from "../config";
 import { useAuthStore } from "../store";
+import { toast } from "react-toastify";
 
 const useLogout = () => {
   const [loading, setLoading] = useState(false);
@@ -10,13 +11,11 @@ const useLogout = () => {
     try {
       const response = await axiosInstance.post("/auth/logout");
       setUser(null, null);
-      // Show the logout message
-      // Path => response.data.message
+      toast.success(response.data.message);
       console.log(response.data);
     } catch (error) {
       if (axiosError(error)) {
-        // Show the error message
-        // Path => error.response.data.message
+        toast.error(error.response.data.message);
       }
     } finally {
       setLoading(false);
