@@ -186,6 +186,8 @@ export const Login = () => {
     setTimeout(() => setPageLoading(false), 1000);
   }, []);
 
+  
+
   const toggleState = () => {
     if (currState === "Sign up") setCurrState("Login");
     else setCurrState("Sign up");
@@ -232,7 +234,7 @@ export const Login = () => {
         <form onSubmit={onSubmitHandler} className="login-form">
           <h2>{currState}</h2>
           {currState === "Sign up" && (
-            <div className="form-input-container">
+            <div className="form-input-container" >
               <i className="fi fi-rr-user form-input-icon"></i>
               <input
                 onChange={(e) => setFullName(e.target.value)}
@@ -245,7 +247,7 @@ export const Login = () => {
             </div>
           )}
           <div className="form-input-container">
-            <i className="fi fi-rr-user form-input-icon"></i>
+            <i className="fi fi-rr-id-card-clip-alt form-input-icon"></i>
             <input
               onChange={(e) => setUserName(e.target.value)}
               value={username}
@@ -256,8 +258,8 @@ export const Login = () => {
             />
           </div>
           <div className="form-input-container">
-            <i className="fi fi-rr-key form-input-icon"></i>
             <div className="pass-input-container">
+            <i className="fi fi-rr-key form-input-icon"></i>
               <input
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
