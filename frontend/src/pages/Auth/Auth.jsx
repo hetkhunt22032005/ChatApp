@@ -3,7 +3,7 @@ import assets from "../../assets";
 import useLogin from "../../hooks/useLogin";
 import useSignup from "../../hooks/useSignup";
 import "./Auth.css";
-import { Spinner } from "../../components";
+import { Spinner, AnimationWrapper } from "../../components";
 
 export const Auth = () => {
   const [currState, setCurrState] = useState("Login");
@@ -41,7 +41,7 @@ export const Auth = () => {
   return (
     <div className="login">
       <img src={assets.logo_big} alt="" className="logo" />
-
+      <AnimationWrapper keyValue={currState}>
       <form onSubmit={onSubmitHandler} className="login-form">
         <h2>{currState}</h2>
         {currState === "Sign Up" ? (
@@ -129,7 +129,7 @@ export const Auth = () => {
         {currState === "Sign Up" ? (
           <div className="login-term">
             <input type="checkbox" required />
-            <p>Agree to the terms of use & privacy policy.</p>
+            <p>Agree to Terms and Conditions.</p>
           </div>
         ) : null}
         <div className="login-forgot">
@@ -141,6 +141,7 @@ export const Auth = () => {
           </p>
         </div>
       </form>
+      </AnimationWrapper>
     </div>
   );
 };
