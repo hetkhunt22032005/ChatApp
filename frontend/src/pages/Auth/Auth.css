@@ -16,6 +16,7 @@
   flex-direction: column;
   gap: 20px;
   border-radius: 10px;
+  width: 370px;
 }
 .login-form h2 {
   font-weight: 500;
