@@ -1,6 +1,17 @@
+// import { useEffect } from "react";
 import assets from "../../assets";
+// import { useContacts } from "../../hooks/useContacts";
 import "./Leftsidebar.css";
+// import useChatStore from "../../store/ChatStore";
+
 export const Leftsidebar = () => {
+  // const { getContacts } = useContacts();
+  // const { contacts } = useChatStore();
+
+  // useEffect(() => {
+  //   getContacts();
+  // }, [getContacts]);
+
   return (
     <div className="ls">
       <div className="ls-top">
@@ -25,6 +36,7 @@ export const Leftsidebar = () => {
         </div>
       </div>
       <div className="ls-list">
+        {/* {console.log(contacts)} */}
         {Array(15)
           .fill("")
           .map((item, index) => (
@@ -40,5 +52,3 @@ export const Leftsidebar = () => {
     </div>
   );
 };
-
-export default Leftsidebar;

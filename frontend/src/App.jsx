@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Auth, Chat, ProfileUpdate } from "./pages";
 import useMe from "./hooks/useMe";
-import { useAuthStore } from "./store";
+import useAuthStore from "./store/AuthStore";
 import { Spinner } from "./components";
 
 const App = () => {
@@ -24,7 +24,7 @@ const App = () => {
       <ToastContainer />
       <Routes>
         <Route path="/" element={user ? <Navigate to={"/chat"} /> : <Auth />} />
-        <Route path="/Chat" element={user ? <Chat /> : <Navigate to={"/"} />} />
+        <Route path="/chat" element={user ? <Chat /> : <Navigate to={"/"} />} />
         <Route
           path="/profile"
           element={user ? <ProfileUpdate /> : <Navigate to={"/"} />}

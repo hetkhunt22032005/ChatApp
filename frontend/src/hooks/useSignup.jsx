@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "../store";
-import { axiosError, axiosInstance } from "../config";
+import useAuthStore from "../store/AuthStore";
+import { axiosError, axiosInstance } from "../config/axios";
 import { toast } from "react-toastify";
 
 const useSignup = () => {

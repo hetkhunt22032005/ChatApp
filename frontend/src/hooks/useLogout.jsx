@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { axiosError, axiosInstance } from "../config";
-import { useAuthStore } from "../store";
+import { axiosError, axiosInstance } from "../config/axios";
+import useAuthStore from "../store/AuthStore";
 import { toast } from "react-toastify";
 
-const useLogout = () => {
+export const useLogout = () => {
   const [loading, setLoading] = useState(false);
   const { setUser } = useAuthStore();
   const logout = async () => {
@@ -23,5 +23,3 @@ const useLogout = () => {
 
   return { loading, logout };
 };
-
-export default useLogout;

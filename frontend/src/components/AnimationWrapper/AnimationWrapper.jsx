@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
 
+// eslint-disable-next-line react/prop-types
 export const AnimationWrapper = ({ keyValue, children }) => {
   const formVariants = {
     hidden: { opacity: 0 },

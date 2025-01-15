@@ -1,12 +1,11 @@
 import axios, { AxiosError } from "axios";
-
-const baseURL = import.meta.env.VITE_BASE_URL;
+import { API_BASE_URL } from "./constants";
 
 export const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: baseURL,
+  baseURL: API_BASE_URL,
 });
 
 export const axiosError = (error) => {
-  return error instanceof AxiosError
-}
+  return error instanceof AxiosError;
+};

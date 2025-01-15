@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "../store";
-import { axiosError, axiosInstance } from "../config";
+import useAuthStore from "../store/AuthStore";
+import { axiosError, axiosInstance } from "../config/axios";
 import { toast } from "react-toastify";
 
 const useLogin = () => {
@@ -17,7 +17,7 @@ const useLogin = () => {
         password,
       });
       setUser(response.data.user, response.data.token);
-      toast.success(response.data.message);
+      toast.success(response.data.message, { autoClose: 3000 });
       navigate("/chat");
     } catch (error) {
       if (axiosError(error)) {

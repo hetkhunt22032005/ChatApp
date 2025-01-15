@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "../store";
-import { axiosInstance } from "../config";
+import  useAuthStore  from "../store/AuthStore";
+import { axiosInstance } from "../config/axios";
 
 const useMe = () => {
   const [loading, setLoading] = useState(false);

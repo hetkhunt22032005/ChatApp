@@ -1,6 +1,6 @@
 import assets from "../../assets";
 import "./Rightsidebar.css";
-import useLogout from "../../hooks/useLogout";
+import { useLogout } from "../../hooks/useLogout";
 export const Rightsidebar = () => {
   const { logout } = useLogout();
   return (
