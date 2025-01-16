@@ -2,7 +2,7 @@ import { useState } from "react";
 import { axiosError, axiosInstance } from "../config/axios";
 import useAuthStore from "../store/AuthStore";
 import useNotificationStore from "../store/NotificationStore";
-import { ERROR, SUCCESS } from "../config/constants";
+import { DEFAULT_MESSAGE, ERROR, SUCCESS } from "../config/constants";
 
 export const useLogout = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export const useLogout = () => {
           id: Date.now(),
           type: ERROR,
           message:
-            error.response?.data?.message || "Something went wrong.",
+            error.response?.data?.message || DEFAULT_MESSAGE,
           route: window.location.pathname,
         });
       }

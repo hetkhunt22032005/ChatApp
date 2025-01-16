@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
-import  useAuthStore  from "../store/AuthStore";
+import useAuthStore from "../store/AuthStore";
 import { axiosInstance } from "../config/axios";
 
 export const useMe = () => {
@@ -12,10 +12,15 @@ export const useMe = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get("/auth/me");
-      setUser(response.data.user, response.data.token);
-      navigate("/chat");
+      if (response?.data?.user && response?.data?.token) {
+        setUser(response.data.user, response.data.token);
+        navigate("/chat");
+      } else {
+        throw new Error("Invalid response structure");
+      }
     } catch (error) {
       console.log(error);
+      console.log("Failed to authenticate: ", error.message);
     } finally {
       setLoading(false);
     }

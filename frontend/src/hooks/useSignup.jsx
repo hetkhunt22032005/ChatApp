@@ -2,17 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import useAuthStore from "../store/AuthStore";
 import { axiosError, axiosInstance } from "../config/axios";
-import { toast } from "react-toastify";
+import useNotificationStore from "../store/NotificationStore";
+import { DEFAULT_MESSAGE, ERROR, SUCCESS } from "../config/constants";
 
 export const useSignup = () => {
   const { setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const signup = async ({ fullname, username, password, gender }) => {
+
     setLoading(true);
-    const success = validateProps(fullname, username, password, gender);
+    gender=gender.toLowerCase();
+    const success = validateProps(fullname, username, password, gender, addNotification);
+    console.log(success);
     if (!success) {
+      setLoading(false);
       return;
     }
     try {
@@ -23,11 +29,22 @@ export const useSignup = () => {
         gender,
       });
       setUser(response.data.user, response.data.token);
-      toast.success(response.data.message);
+      addNotification({
+        id: Date.now(),
+        type: SUCCESS,
+        message: response.data.message,
+        route: "/chat",
+      });
       navigate("/chat");
     } catch (error) {
       if (axiosError(error)) {
-        toast.error(error.response.data.message);
+        addNotification({
+          id: Date.now(),
+          type: ERROR,
+          message:
+            error.response?.data?.message || DEFAULT_MESSAGE,
+          route: window.location.pathname,
+        });
       }
     } finally {
       setLoading(false);
@@ -37,11 +54,12 @@ export const useSignup = () => {
   return { signup, loading };
 };
 
-function validateProps(fullname, username, password, gender) {
+function validateProps(fullname, username, password, gender, addNotification) {
+  
   if (
-    !validFullName(fullname) ||
-    !validUsername(username) ||
-    !validPassword(password) ||
+    !validFullName(fullname, addNotification) ||
+    !validUsername(username, addNotification) ||
+    !validPassword(password, addNotification) ||
     !validGender(gender)
   ) {
     return false;
@@ -49,60 +67,112 @@ function validateProps(fullname, username, password, gender) {
   return true;
 }
 
-function validFullName(fullname) {
+function validFullName(fullname, addNotification) {
   const parserFullName = String(fullname);
+
   if (parserFullName.length < 6) {
-    toast.error("Full name must be atleast 6 characters long");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Full name must be at least 6 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (parserFullName.length > 255) {
-    toast.error("Full name cannot be more than 255 characters");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Full name cannot exceed 255 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   return true;
 }
 
-function validUsername(username) {
+function validUsername(username, addNotification) {
   const parsedUsername = String(username);
   const regex = /^[a-zA-Z0-9_]+$/;
+
   if (parsedUsername.length < 3) {
-    toast.error("Username must be at least 3 characters long");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Username must be at least 3 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (parsedUsername.length > 50) {
-    toast.error("Username cannot be more than 50 characters");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Username cannot exceed 50 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (!regex.test(parsedUsername)) {
-    toast.error("Username can only contain letters, numbers, and underscores");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Username can only contain letters, numbers, and underscores.",
+      route: window.location.pathname,
+    });
     return false;
   }
   return true;
 }
 
-function validPassword(password) {
+function validPassword(password, addNotification) {
   const parsedPassword = String(password);
   const regex1 = /[A-Z]/;
   const regex2 = /[a-z]/;
   const regex3 = /[0-9]/;
   if (parsedPassword.length < 8) {
-    toast.error("Passworrd must be atleast 8 characters long");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Password must be at least 8 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (parsedPassword.length > 20) {
-    toast.error("Password cannot be more than 20 characters long");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Password cannot exceed 20 characters.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (!regex1.test(parsedPassword)) {
-    toast.error("Password must contain at least one uppercase letter");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Password must contain at least one uppercase letter.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (!regex2.test(parsedPassword)) {
-    toast.error("Password must contain at least one lowercase letter");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Password must contain at least one lowercase letter.",
+      route: window.location.pathname,
+    });
     return false;
   }
   if (!regex3.test(parsedPassword)) {
-    toast.error("Password must contain at least one digit");
+    addNotification({
+      id: Date.now(),
+      type: ERROR,
+      message: "Password must contain at least one number.",
+      route: window.location.pathname,
+    });
     return false;
   }
   return true;
