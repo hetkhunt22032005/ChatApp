@@ -3,9 +3,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Auth, Chat, ProfileUpdate } from "./pages";
-import useMe from "./hooks/useMe";
+import { useMe } from "./hooks/useMe";
 import useAuthStore from "./store/AuthStore";
-import { Spinner } from "./components";
+import { NotificationHandler, Spinner } from "./components";
 
 const App = () => {
   const { loading, checkAuth } = useMe();
@@ -22,6 +22,7 @@ const App = () => {
   return (
     <>
       <ToastContainer />
+      <NotificationHandler />
       <Routes>
         <Route path="/" element={user ? <Navigate to={"/chat"} /> : <Auth />} />
         <Route path="/chat" element={user ? <Chat /> : <Navigate to={"/"} />} />

@@ -2,12 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import useAuthStore from "../store/AuthStore";
 import { axiosError, axiosInstance } from "../config/axios";
-import { toast } from "react-toastify";
+import useNotificationStore from "../store/NotificationStore";
+import { DEFAULT_MESSAGE, ERROR, SUCCESS } from "../config/constants";
 
-const useLogin = () => {
+export const useLogin = () => {
   const { setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification
+  );
 
   const login = async ({ username, password }) => {
     setLoading(true);
@@ -17,11 +21,21 @@ const useLogin = () => {
         password,
       });
       setUser(response.data.user, response.data.token);
-      toast.success(response.data.message, { autoClose: 3000 });
+      addNotification({
+        id: Date.now(),
+        type: SUCCESS,
+        message: response.data.message,
+        route: "/chat",
+      });
       navigate("/chat");
     } catch (error) {
       if (axiosError(error)) {
-        toast.error(error.response.data.message);
+        addNotification({
+          id: Date.now(),
+          type: ERROR,
+          message: error.response?.data?.message || DEFAULT_MESSAGE,
+          route: window.location.pathname,
+        });
       }
     } finally {
       setLoading(false);
@@ -29,5 +43,3 @@ const useLogin = () => {
   };
   return { login, loading };
 };
-
-export default useLogin;

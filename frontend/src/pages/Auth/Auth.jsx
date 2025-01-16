@@ -1,7 +1,7 @@
 import { useState } from "react";
 import assets from "../../assets";
-import useLogin from "../../hooks/useLogin";
-import useSignup from "../../hooks/useSignup";
+import { useLogin } from "../../hooks/useLogin";
+import { useSignup } from "../../hooks/useSignup";
 import "./Auth.css";
 import { Spinner, AnimationWrapper } from "../../components";
 
@@ -42,105 +42,105 @@ export const Auth = () => {
     <div className="login">
       <img src={assets.logo_big} alt="" className="logo" />
       <AnimationWrapper keyValue={currState}>
-      <form onSubmit={onSubmitHandler} className="login-form">
-        <h2>{currState}</h2>
-        {currState === "Sign Up" ? (
+        <form onSubmit={onSubmitHandler} className="login-form">
+          <h2>{currState}</h2>
+          {currState === "Sign Up" ? (
+            <div className="form-input-container">
+              <i className="fi fi-rr-user form-input-icon"></i>
+              <input
+                onChange={(e) =>
+                  setFormProps({ ...formProps, fullname: e.target.value })
+                }
+                defaultValue=""
+                type="text"
+                placeholder="Full name"
+                className="form-input"
+                required
+              />
+            </div>
+          ) : null}
           <div className="form-input-container">
-            <i className="fi fi-rr-user form-input-icon"></i>
+            <i className="fi fi-rr-id-card-clip-alt form-input-icon"></i>
             <input
               onChange={(e) =>
-                setFormProps({ ...formProps, fullname: e.target.value })
+                setFormProps({ ...formProps, username: e.target.value })
               }
               defaultValue=""
               type="text"
-              placeholder="Full name"
+              placeholder="Username"
               className="form-input"
               required
             />
           </div>
-        ) : null}
-        <div className="form-input-container">
-          <i className="fi fi-rr-id-card-clip-alt form-input-icon"></i>
-          <input
-            onChange={(e) =>
-              setFormProps({ ...formProps, username: e.target.value })
-            }
-            defaultValue=""
-            type="text"
-            placeholder="Username"
-            className="form-input"
-            required
-          />
-        </div>
-        <div className="form-input-container">
-          <div className="pass-input-container">
-            <i className="fi fi-rr-key form-input-icon"></i>
-            <input
-              onChange={(e) =>
-                setFormProps({ ...formProps, password: e.target.value })
-              }
-              defaultValue=""
-              type={isPassVisible ? "text" : "password"}
-              placeholder="Password"
-              className="form-input"
-              required
-            />
-            <i
-              className={`fi ${
-                isPassVisible ? "fi-rr-eye" : "fi-rr-eye-crossed"
-              } pass-icon`}
-              onClick={togglePassVisibility}
-            ></i>
-          </div>
-        </div>
-        {currState === "Sign Up" ? (
-          <div className="gender-selection">
-            <label className="gender-option">
+          <div className="form-input-container">
+            <div className="pass-input-container">
+              <i className="fi fi-rr-key form-input-icon"></i>
               <input
-                type="radio"
-                value="Male"
-                name="gender"
                 onChange={(e) =>
-                  setFormProps({ ...formProps, gender: e.target.value })
+                  setFormProps({ ...formProps, password: e.target.value })
                 }
-                checked={formProps.gender === "Male"}
+                defaultValue=""
+                type={isPassVisible ? "text" : "password"}
+                placeholder="Password"
+                className="form-input"
                 required
               />
-              Male
-            </label>
-            <label className="gender-option">
-              <input
-                type="radio"
-                value="Female"
-                name="gender"
-                onChange={(e) =>
-                  setFormProps({ ...formProps, gender: e.target.value })
-                }
-                checked={formProps.gender === "Female"}
-                required
-              />
-              Female
-            </label>
+              <i
+                className={`fi ${
+                  isPassVisible ? "fi-rr-eye" : "fi-rr-eye-crossed"
+                } pass-icon`}
+                onClick={togglePassVisibility}
+              ></i>
+            </div>
           </div>
-        ) : null}
-        <button type="submit">
-          {currState === "Sign Up" ? "Create Account" : "Login Now"}
-        </button>
-        {currState === "Sign Up" ? (
-          <div className="login-term">
-            <input type="checkbox" required />
-            <p>Agree to Terms and Conditions.</p>
+          {currState === "Sign Up" ? (
+            <div className="gender-selection">
+              <label className="gender-option">
+                <input
+                  type="radio"
+                  value="Male"
+                  name="gender"
+                  onChange={(e) =>
+                    setFormProps({ ...formProps, gender: e.target.value })
+                  }
+                  checked={formProps.gender === "Male"}
+                  required
+                />
+                Male
+              </label>
+              <label className="gender-option">
+                <input
+                  type="radio"
+                  value="Female"
+                  name="gender"
+                  onChange={(e) =>
+                    setFormProps({ ...formProps, gender: e.target.value })
+                  }
+                  checked={formProps.gender === "Female"}
+                  required
+                />
+                Female
+              </label>
+            </div>
+          ) : null}
+          <button type="submit">
+            {currState === "Sign Up" ? "Create Account" : "Login Now"}
+          </button>
+          {currState === "Sign Up" ? (
+            <div className="login-term">
+              <input type="checkbox" required />
+              <p>Agree to Terms and Conditions.</p>
+            </div>
+          ) : null}
+          <div className="login-forgot">
+            <p className="login-toggle">
+              {currState === "Sign Up"
+                ? "Already have an account?"
+                : "Create an account?"}
+              <span onClick={toggleState}> Click here.</span>
+            </p>
           </div>
-        ) : null}
-        <div className="login-forgot">
-          <p className="login-toggle">
-            {currState === "Sign Up"
-              ? "Already have an account?"
-              : "Create an account?"}
-            <span onClick={toggleState}> Click here.</span>
-          </p>
-        </div>
-      </form>
+        </form>
       </AnimationWrapper>
     </div>
   );

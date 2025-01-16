@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { axiosError, axiosInstance } from "../config/axios";
 
-const useChats = () => {
+export const useChats = () => {
   const [loading, setLoading] = useState(false);
   const getChats = useCallback(async (receiverId) => {
     setLoading(true);
@@ -10,7 +10,7 @@ const useChats = () => {
       console.log(response.data.messages);
     } catch (error) {
       if (axiosError(error)) {
-        // Show the error message
+        // Add the message to notification service
         console.log(error);
       }
     } finally {
@@ -20,5 +20,3 @@ const useChats = () => {
 
   return { loading, getChats };
 };
-
-export default useChats;

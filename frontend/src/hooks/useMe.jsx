@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import  useAuthStore  from "../store/AuthStore";
 import { axiosInstance } from "../config/axios";
 
-const useMe = () => {
+export const useMe = () => {
   const [loading, setLoading] = useState(false);
   const { setUser } = useAuthStore();
   const navigate = useNavigate();
@@ -23,5 +23,3 @@ const useMe = () => {
 
   return { checkAuth, loading };
 };
-
-export default useMe;

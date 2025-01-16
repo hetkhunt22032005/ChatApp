@@ -4,7 +4,7 @@ import useAuthStore from "../store/AuthStore";
 import { axiosError, axiosInstance } from "../config/axios";
 import { toast } from "react-toastify";
 
-const useSignup = () => {
+export const useSignup = () => {
   const { setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -116,5 +116,3 @@ function validGender(gender) {
   }
   return true;
 }
-
-export default useSignup;
