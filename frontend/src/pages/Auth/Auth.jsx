@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import assets from "../../assets";
 import { useLogin } from "../../hooks/useLogin";
 import { useSignup } from "../../hooks/useSignup";
@@ -10,11 +10,22 @@ export const Auth = () => {
   const [isPassVisible, setPassVisible] = useState(false);
   const { login, loading: isLoggingIn } = useLogin();
   const { signup, loading: isSigningUp } = useSignup();
-  const [formProps, setFormProps] = useState(
-    currState === "Sign Up"
-      ? { fullname: "", username: "", password: "", gender: "" }
-      : { username: "", password: "" }
-  );
+
+  const [formProps, setFormProps] = useState({ username: "", password: "" });
+
+  useEffect(() => {
+    if (currState === "Sign Up") {
+      setFormProps({ fullname: "", username: "", password: "", gender: "" });
+    } else {
+      setFormProps({ username: "", password: "" });
+    }
+  }, [currState]);
+
+  // const [formProps, setFormProps] = useState(
+  //   currState === "Sign Up"
+  //     ? { fullname: "", username: "", password: "", gender: "" }
+  //     : { username: "", password: "" }
+  // );
 
   const toggleState = () => {
     setCurrState((prev) => (prev === "Sign Up" ? "Login" : "Sign Up"));
@@ -51,7 +62,7 @@ export const Auth = () => {
                 onChange={(e) =>
                   setFormProps({ ...formProps, fullname: e.target.value })
                 }
-                defaultValue=""
+                value={formProps.fullname || ""}
                 type="text"
                 placeholder="Full name"
                 className="form-input"
@@ -65,7 +76,7 @@ export const Auth = () => {
               onChange={(e) =>
                 setFormProps({ ...formProps, username: e.target.value })
               }
-              defaultValue=""
+              value={formProps.username || ""}
               type="text"
               placeholder="Username"
               className="form-input"
@@ -79,7 +90,7 @@ export const Auth = () => {
                 onChange={(e) =>
                   setFormProps({ ...formProps, password: e.target.value })
                 }
-                defaultValue=""
+                value={formProps.password || ""}
                 type={isPassVisible ? "text" : "password"}
                 placeholder="Password"
                 className="form-input"
@@ -98,12 +109,12 @@ export const Auth = () => {
               <label className="gender-option">
                 <input
                   type="radio"
-                  value="Male"
+                  value="male"
                   name="gender"
                   onChange={(e) =>
                     setFormProps({ ...formProps, gender: e.target.value })
                   }
-                  checked={formProps.gender === "Male"}
+                  checked={formProps.gender === "male"}
                   required
                 />
                 Male
@@ -111,12 +122,12 @@ export const Auth = () => {
               <label className="gender-option">
                 <input
                   type="radio"
-                  value="Female"
+                  value="female"
                   name="gender"
                   onChange={(e) =>
                     setFormProps({ ...formProps, gender: e.target.value })
                   }
-                  checked={formProps.gender === "Female"}
+                  checked={formProps.gender === "female"}
                   required
                 />
                 Female
@@ -129,7 +140,7 @@ export const Auth = () => {
           {currState === "Sign Up" ? (
             <div className="login-term">
               <input type="checkbox" required />
-              <p>Agree to Terms and Conditions.</p>
+              <p>Agree to the Terms and Conditions.</p>
             </div>
           ) : null}
           <div className="login-forgot">
