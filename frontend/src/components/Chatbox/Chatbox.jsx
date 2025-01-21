@@ -1,4 +1,5 @@
 import assets from "../../assets";
+import { InputBox } from "../InputBox/InputBox";
 import "./Chatbox.css";
 export const Chatbox = () => {
   return (
@@ -36,20 +37,7 @@ export const Chatbox = () => {
             </div>
           </div>
         </div>
-        <div className="chat-input">
-          <input type="text" placeholder="send a message" />
-          <input
-            type="file"
-            name=""
-            id="image"
-            accept="image/png,image/jpeg"
-            hidden
-          />
-          <label htmlFor="image">
-            <img src={assets.gallery_icon} alt="" srcSet="" />
-          </label>
-          <img src={assets.send_button} alt="" srcSet="" />
-        </div>
+        <InputBox/>
       </div>
     </div>
   );

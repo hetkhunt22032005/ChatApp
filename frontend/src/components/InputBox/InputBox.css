@@ -1,0 +1,46 @@
+    .chat-input {
+        display: flex;
+        align-items: center;
+    }
+
+    .image-preview {
+        display: flex;
+        padding-right: 5px;
+        position: relative;
+        width: 100%;
+        /* Full width of the parent container */
+        max-width: 800px;
+        /* Optional: limit the maximum width */
+        margin: 0px 0px;
+        /* Space above and below the preview */
+    }
+
+    .preview-image {
+        width: 20%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .remove-button {
+        position: absolute;
+        top: 1px;
+        left: 5px;
+        background-color: rgba(26, 63, 246, 0.8);
+        /* Semi-transparent red */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .remove-button:hover {
+        background-color: rgb(246, 87, 87);
+        /* Fully opaque red on hover */
+    }

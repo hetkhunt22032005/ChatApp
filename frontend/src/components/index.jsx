@@ -1,6 +1,7 @@
-export { Rightsidebar } from "./Rightsidebar/Rightsidebar";
+export { AnimationWrapper } from "./AnimationWrapper/AnimationWrapper";
 export { Chatbox } from "./Chatbox/Chatbox";
 export { Leftsidebar } from "./Leftsidebar/Leftsidebar";
-export { Spinner } from "./Spinner/Spinner";
-export { AnimationWrapper } from "./AnimationWrapper/AnimationWrapper";
 export { NotificationHandler } from "./NotificationHandler/NotificationHandler";
+export { Rightsidebar } from "./Rightsidebar/Rightsidebar";
+export { Spinner } from "./Spinner/Spinner";
+
